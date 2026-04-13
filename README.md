@@ -13,6 +13,8 @@ Boundary:
 
 Repo map:
 
+- `.agents/skills/bridge/` repo-authored source of truth for the shared bridge
+  skill
 - `specs/` normalized active spec surface
 - `references/source-bundles/` retained source bundles for provenance
 - `scripts/bridge-conformance-check.sh` repo-owned conformance check

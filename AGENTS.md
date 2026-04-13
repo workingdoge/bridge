@@ -21,6 +21,8 @@ scripts/bridge-conformance-check.sh  # Verify normalized bridge surface
 
 ## Repo Shape
 
+- `.agents/skills/bridge/` is the repo-authored source of truth for the shared
+  bridge skill.
 - `specs/` is the normalized active surface for bridge-owned specs.
 - `references/source-bundles/` holds imported source bundles for provenance only.
 - `scripts/bridge-conformance-check.sh` is the repo-owned conformance surface.
