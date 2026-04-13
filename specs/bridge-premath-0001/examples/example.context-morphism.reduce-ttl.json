@@ -1,0 +1,47 @@
+{
+  "version": "bridge-premath-0001-0.1",
+  "morphism_id": "mor.analytics.20260413.001.reduce-ttl",
+  "domain_context_id": "ctx.analytics.reporting-db.20260413.001.narrow",
+  "codomain_context_id": "ctx.analytics.reporting-db.20260413.001",
+  "operations": [
+    {
+      "op": "tighten_request_scope",
+      "before": {
+        "rows_max": 1000
+      },
+      "after": {
+        "rows_max": 500
+      },
+      "note": "Narrow result volume for a more restrictive execution leaf."
+    },
+    {
+      "op": "reduce_ttl",
+      "before": 300,
+      "after": 120,
+      "note": "Execution leaf TTL is lower than the parent bridge request."
+    },
+    {
+      "op": "select_secret_version",
+      "before": {
+        "version_selector": "active"
+      },
+      "after": {
+        "version_id": "v12"
+      },
+      "note": "Resolve the active selector to a concrete current version."
+    },
+    {
+      "op": "project_chart",
+      "chart_id": "materialization",
+      "note": "Project to the last-mile materialization chart for session issuance."
+    }
+  ],
+  "invariants": {
+    "authority_not_widened": true,
+    "ttl_nonincreasing": true,
+    "freshness_nonstale": true,
+    "burn_monotone": true,
+    "plaintext_not_globalized": true
+  },
+  "notes": "Illustrative pullback morphism from a broad secret-bound request to a narrower execution-leaf context."
+}

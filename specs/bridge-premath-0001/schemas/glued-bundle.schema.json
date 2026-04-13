@@ -1,0 +1,239 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "glued-bundle.schema.json",
+  "title": "GluedBundle",
+  "description": "Global glued object for the Premath bridge profile. This bundle contains normalized local chart sections and their compatibility witness. It intentionally excludes raw plaintext secret values.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "bridge-premath-0001-0.1"
+    },
+    "bundle_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "overlaps": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "request": {
+          "$ref": "request-overlap.schema.json"
+        },
+        "secret": {
+          "$ref": "secret-overlap.schema.json"
+        },
+        "policy": {
+          "$ref": "policy-overlap.schema.json"
+        },
+        "facts": {
+          "$ref": "facts-overlap.schema.json"
+        },
+        "audit": {
+          "$ref": "audit-overlap.schema.json"
+        }
+      },
+      "required": [
+        "request",
+        "secret",
+        "policy",
+        "facts",
+        "audit"
+      ]
+    },
+    "local_sections": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bridge": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "trace": {
+              "type": "string",
+              "minLength": 1
+            },
+            "witness_jti": {
+              "type": "string",
+              "minLength": 1
+            },
+            "decision_effect": {
+              "type": "string",
+              "enum": [
+                "allow",
+                "deny",
+                "burn"
+              ]
+            },
+            "effective_ttl_s": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "policy_input_hash": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "trace",
+            "witness_jti",
+            "decision_effect"
+          ]
+        },
+        "secret_core": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "secret_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "secret_class": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "lifecycle_state": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "secret_id",
+            "secret_class",
+            "lifecycle_state"
+          ]
+        },
+        "materialization": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "binding_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "session_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "session_state": {
+              "type": "string",
+              "minLength": 1
+            },
+            "issued_ttl_s": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "binding_id",
+            "session_state"
+          ]
+        },
+        "provider_plane": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "deployment_profile_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "provider_decision_status": {
+              "type": "string",
+              "enum": [
+                "accept",
+                "deny",
+                "burn"
+              ]
+            },
+            "attestation_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "revocation_snapshot_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "deployment_profile_id",
+            "provider_decision_status"
+          ]
+        },
+        "audit": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "stream_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "sequence": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "event_hash": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "stream_id",
+            "sequence",
+            "event_hash"
+          ]
+        }
+      },
+      "required": [
+        "bridge",
+        "secret_core",
+        "materialization",
+        "provider_plane",
+        "audit"
+      ]
+    },
+    "compatibility_witness": {
+      "$ref": "compatibility-witness.schema.json"
+    },
+    "laws": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pullback_stable": {
+          "type": "boolean"
+        },
+        "descent_claimed": {
+          "type": "boolean"
+        },
+        "plaintext_global_section_absent": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "pullback_stable",
+        "descent_claimed",
+        "plaintext_global_section_absent"
+      ]
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "bundle_id",
+    "context_ref",
+    "overlaps",
+    "local_sections",
+    "compatibility_witness",
+    "laws"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "compatibility-witness.schema.json",
+  "title": "CompatibilityWitness",
+  "description": "Structured witness that the local chart sections satisfy the Premath gluing laws.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "bridge-premath-0001-0.1"
+    },
+    "witness_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "request_coherent": {
+      "type": "boolean"
+    },
+    "secret_seam_coherent": {
+      "type": "boolean"
+    },
+    "policy_monotone": {
+      "type": "boolean"
+    },
+    "authority_is_meet": {
+      "type": "boolean"
+    },
+    "provider_facts_coherent": {
+      "type": "boolean"
+    },
+    "lifecycle_coherent": {
+      "type": "boolean"
+    },
+    "burn_dominates": {
+      "type": "boolean"
+    },
+    "audit_before_allow": {
+      "type": "boolean"
+    },
+    "no_plaintext_global": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "version",
+    "witness_id",
+    "request_coherent",
+    "secret_seam_coherent",
+    "policy_monotone",
+    "authority_is_meet",
+    "provider_facts_coherent",
+    "lifecycle_coherent",
+    "burn_dominates",
+    "audit_before_allow",
+    "no_plaintext_global"
+  ]
+}

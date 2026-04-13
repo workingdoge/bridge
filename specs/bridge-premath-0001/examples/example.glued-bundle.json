@@ -1,0 +1,111 @@
+{
+  "version": "bridge-premath-0001-0.1",
+  "bundle_id": "glued.analytics.reporting-db.20260413.001",
+  "context_ref": "ctx.analytics.reporting-db.20260413.001",
+  "overlaps": {
+    "request": {
+      "trace": "trace.analytics.20260413.001",
+      "request_id": "req.analytics.20260413.001",
+      "witness_jti": "jti.analytics.20260413.001",
+      "requested_tool": "db.query.readonly",
+      "requested_resource": "postgres://analytics/reporting",
+      "source_domain": "acme.prod.analytics",
+      "destination_domain": "acme.prod.analytics",
+      "subject_id": "spiffe://acme/agents/reporting-worker",
+      "consumer_id": "analytics-reporter.service"
+    },
+    "secret": {
+      "secret_id": "secret.analytics.reporting-db",
+      "secret_class": "database-credential",
+      "version_selector": "active",
+      "version_id": "v12",
+      "secret_epoch": 12,
+      "binding_id": "binding.reporting-db",
+      "requested_resource": "postgres://analytics/reporting",
+      "backend_profile_id": "backend.vault-dynamic-db",
+      "materializer_profile_id": "materializer.systemd-credential"
+    },
+    "policy": {
+      "requested_method": "systemd-credential",
+      "requested_ttl_s": 300,
+      "mode": "normal",
+      "conf_level": "restricted",
+      "integ_level": "attested",
+      "non_exportable": true,
+      "direct_model_access_prohibited": true
+    },
+    "facts": {
+      "deployment_profile_id": "nixos-host-main",
+      "provider_catalog_id": "catalog.main",
+      "attestation_id": "att-2026-04-13T14:30:00Z-host-1",
+      "posture_digest": "sha256:99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa",
+      "revocation_snapshot_id": "rev-2026-04-13T14:30:00Z",
+      "issuer_epoch": "2026Q2",
+      "mode_epoch": 5,
+      "audit_sink_id": "audit-main"
+    },
+    "audit": {
+      "trace": "trace.analytics.20260413.001",
+      "stream_id": "audit-stream-main",
+      "sequence": 42,
+      "payload_hash": "sha256:4c92571d3708587110f3d5b13ba4456dfef1b26ecf3d19e63013f505d662b0c4",
+      "prev_event_hash": "sha256:7ff737f1c2d6a5f09b8bf2c84f1d93d57b2906b90b4bd4fdb74f1c8f5bcf0041",
+      "event_hash": "sha256:6842d4619af0f3974fd53de02cd832c6a5cfd833bc13c0f4fc8682bd19f23a66"
+    }
+  },
+  "local_sections": {
+    "bridge": {
+      "trace": "trace.analytics.20260413.001",
+      "witness_jti": "jti.analytics.20260413.001",
+      "decision_effect": "allow",
+      "effective_ttl_s": 120,
+      "policy_input_hash": "sha256:5b1a10d7a8718dc8969987e32bf56b5b4e2d4c274a89f2b5e271ee3f3a9af7ad"
+    },
+    "secret_core": {
+      "secret_id": "secret.analytics.reporting-db",
+      "secret_class": "database-credential",
+      "version_id": "v12",
+      "lifecycle_state": "active"
+    },
+    "materialization": {
+      "binding_id": "binding.reporting-db",
+      "session_id": "session.req.analytics.20260413.001",
+      "session_state": "issued",
+      "issued_ttl_s": 120
+    },
+    "provider_plane": {
+      "deployment_profile_id": "nixos-host-main",
+      "provider_decision_status": "accept",
+      "attestation_id": "att-2026-04-13T14:30:00Z-host-1",
+      "revocation_snapshot_id": "rev-2026-04-13T14:30:00Z"
+    },
+    "audit": {
+      "stream_id": "audit-stream-main",
+      "sequence": 42,
+      "event_hash": "sha256:6842d4619af0f3974fd53de02cd832c6a5cfd833bc13c0f4fc8682bd19f23a66"
+    }
+  },
+  "compatibility_witness": {
+    "version": "bridge-premath-0001-0.1",
+    "witness_id": "compat.analytics.reporting-db.20260413.001",
+    "request_coherent": true,
+    "secret_seam_coherent": true,
+    "policy_monotone": true,
+    "authority_is_meet": true,
+    "provider_facts_coherent": true,
+    "lifecycle_coherent": true,
+    "burn_dominates": true,
+    "audit_before_allow": true,
+    "no_plaintext_global": true,
+    "notes": [
+      "Session TTL is less than or equal to bridge effective TTL.",
+      "No raw plaintext secret values appear in the glued bundle."
+    ]
+  },
+  "laws": {
+    "pullback_stable": true,
+    "descent_claimed": true,
+    "plaintext_global_section_absent": true
+  },
+  "notes": "Starter example of a successfully glued bundle."
+}

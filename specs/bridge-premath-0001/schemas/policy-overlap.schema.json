@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "policy-overlap.schema.json",
+  "title": "PolicyOverlap",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "requested_method": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requested_ttl_s": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "degraded",
+        "safe",
+        "burn",
+        "restoring"
+      ]
+    },
+    "conf_level": {
+      "type": "string",
+      "minLength": 1
+    },
+    "integ_level": {
+      "type": "string",
+      "minLength": 1
+    },
+    "non_exportable": {
+      "type": "boolean"
+    },
+    "direct_model_access_prohibited": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "requested_method",
+    "requested_ttl_s",
+    "mode",
+    "conf_level",
+    "integ_level",
+    "non_exportable",
+    "direct_model_access_prohibited"
+  ]
+}

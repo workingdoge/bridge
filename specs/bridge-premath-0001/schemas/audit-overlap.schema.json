@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "audit-overlap.schema.json",
+  "title": "AuditOverlap",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "trace": {
+      "type": "string",
+      "minLength": 1
+    },
+    "stream_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "payload_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prev_event_hash": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_hash": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "trace",
+    "stream_id",
+    "sequence",
+    "payload_hash",
+    "prev_event_hash",
+    "event_hash"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "version": "bridge-premath-0001-0.1",
+  "context_id": "ctx.analytics.reporting-db.20260413.001",
+  "coherence_level": "Gpd",
+  "request": {
+    "request_id": "req.analytics.20260413.001",
+    "trace": "trace.analytics.20260413.001",
+    "witness_jti": "jti.analytics.20260413.001",
+    "witness_type": "authority",
+    "requested_tool": "db.query.readonly",
+    "requested_resource": "postgres://analytics/reporting",
+    "source_domain": "acme.prod.analytics",
+    "destination_domain": "acme.prod.analytics",
+    "subject_id": "spiffe://acme/agents/reporting-worker",
+    "act_for": "user:alice@example.com",
+    "consumer_kind": "systemd-unit",
+    "consumer_id": "analytics-reporter.service"
+  },
+  "secret": {
+    "secret_id": "secret.analytics.reporting-db",
+    "secret_class": "database-credential",
+    "version_selector": "active",
+    "version_id": "v12",
+    "secret_epoch": 12,
+    "bridge_binding_required": true
+  },
+  "resource_secret_binding": {
+    "binding_id": "binding.reporting-db",
+    "resource_basis": "requested_resource",
+    "requested_resource": "postgres://analytics/reporting",
+    "secret_id": "secret.analytics.reporting-db",
+    "backend_profile_id": "backend.vault-dynamic-db",
+    "materializer_profile_id": "materializer.systemd-credential",
+    "issuance_mode": "dynamic-lease"
+  },
+  "policy": {
+    "requested_method": "systemd-credential",
+    "requested_ttl_s": 300,
+    "mode": "normal",
+    "conf_level": "restricted",
+    "compartments": [
+      "finance"
+    ],
+    "integ_level": "attested",
+    "non_exportable": true,
+    "direct_model_access_prohibited": true
+  },
+  "provider_facts": {
+    "deployment_profile_id": "nixos-host-main",
+    "provider_catalog_id": "catalog.main",
+    "time_source_id": "time-main",
+    "authoritative_now": "2026-04-13T14:30:00Z",
+    "attestation_id": "att-2026-04-13T14:30:00Z-host-1",
+    "posture_digest": "sha256:99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa",
+    "revocation_snapshot_id": "rev-2026-04-13T14:30:00Z",
+    "issuer_epoch": "2026Q2",
+    "mode_controller_id": "mode-main",
+    "mode_epoch": 5,
+    "audit_sink_id": "audit-main",
+    "facts_fresh_until": "2026-04-13T14:35:00Z"
+  },
+  "binding": {
+    "binding_id": "binding.reporting-db",
+    "backend_profile_id": "backend.vault-dynamic-db",
+    "materializer_profile_id": "materializer.systemd-credential",
+    "allowed_actions": [
+      "read",
+      "issue-dynamic"
+    ],
+    "allowed_modes": [
+      "normal",
+      "degraded"
+    ],
+    "non_exportable": true
+  },
+  "audit": {
+    "stream_id": "audit-stream-main",
+    "last_sequence": 41,
+    "last_event_hash": "sha256:7ff737f1c2d6a5f09b8bf2c84f1d93d57b2906b90b4bd4fdb74f1c8f5bcf0041",
+    "checkpoint_source_id": "audit-main",
+    "payload_hash": "sha256:0a8d685f16d4122de4b6f5f37bf84a6096b567f371d5f2f6999956a95555b21a"
+  },
+  "charts": [
+    "bridge",
+    "secret-core",
+    "materialization",
+    "provider-plane",
+    "audit"
+  ],
+  "notes": "Synthetic starter example aligned to the uploaded bundle's bridge/materialization/provider examples."
+}
