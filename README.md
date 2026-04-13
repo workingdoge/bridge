@@ -15,6 +15,7 @@ Repo map:
 
 - `specs/` normalized active spec surface
 - `references/source-bundles/` retained source bundles for provenance
+- `scripts/bridge-conformance-check.sh` repo-owned conformance check
 - `PROVENANCE.md` authority split and import record
 
 Workflow:
@@ -22,3 +23,4 @@ Workflow:
 - use `bd ready --json`
 - claim with `bd update <id> --claim --json`
 - close with `bd close <id> --reason "..." --json`
+- run `scripts/bridge-conformance-check.sh` after spec-surface changes

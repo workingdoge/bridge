@@ -16,3 +16,4 @@ Rules:
   reason to normalize them
 - keep domain doctrine and examples here, not in `references/`
 - do not treat this repo as the home of Premath kernel doctrine
+- validate the staged surface with `scripts/bridge-conformance-check.sh`
