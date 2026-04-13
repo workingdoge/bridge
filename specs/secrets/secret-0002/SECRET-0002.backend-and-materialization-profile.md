@@ -29,6 +29,33 @@ A conforming implementation SHALL define:
 Authorization alone is not secret management. Lifecycle alone is not enough either.
 A conforming deployment needs all three.
 
+## 2.1 Bridge-to-secret handoff
+
+The normalized handoff from Bridge Spec v0.2 into SECRET-0002 SHALL be a
+`MaterializationPlanRequest`.
+
+The bridge adapter SHALL assemble this object after bridge admission is decided
+and before any local secret materialization path is chosen.
+
+For a secret-bound request, the handoff SHALL carry at least:
+
+- bridge request identity and witness identity;
+- bridge decision effect plus deny or burn reasons;
+- hashes or equivalent references tying the handoff back to the bridge policy
+  input and decision artifacts;
+- explicit resource-to-secret seam data including `binding_id`;
+- secret identity and class;
+- consumer identity and attestation basis;
+- requested method and requested TTL;
+- bridge-derived authority bounds such as effective TTL, non-exportability, and
+  materialization budget;
+- current mode and bridge epoch.
+
+The planner SHALL treat `decision_effect != accept` as non-materializable.
+It MAY still emit a denied `MaterializationSession` for audit and teardown
+planning, but it SHALL NOT issue a usable secret handle from a non-accept
+bridge decision.
+
 ## 3. Conformance
 
 A system conforms to SECRET-0002 only if all of the following hold:
@@ -199,6 +226,8 @@ A `MaterializationSession` is the concrete record of a planned or issued local s
 
 A session SHALL include:
 
+- `binding_id`;
+- the upstream bridge decision effect;
 - binding of secret id, secret class, backend profile, and materializer profile;
 - consumer identity;
 - bridge trace;
@@ -214,13 +243,15 @@ A session SHALL NOT include raw plaintext secret values.
 A conforming planner SHALL:
 
 1. validate the selected profiles and binding;
-2. deny if `mode = burn`;
-3. deny if the request method does not match the selected materializer profile;
-4. deny if the consumer kind or requested TTL violates policy;
-5. require attestation when the backend trust boundary or binding demands it;
-6. select the narrowest feasible plaintext surface;
-7. prefer handle/proxy patterns over reusable plaintext where feasible;
-8. emit a `MaterializationSession` record whether the request is allowed or denied.
+2. deny if the bridge decision effect is not `accept`;
+3. deny if `mode = burn`;
+4. deny if the request method does not match the selected materializer profile;
+5. deny if the consumer kind or requested TTL violates either local policy or
+   the bridge-derived authority bounds;
+6. require attestation when the backend trust boundary or binding demands it;
+7. select the narrowest feasible plaintext surface;
+8. prefer handle/proxy patterns over reusable plaintext where feasible;
+9. emit a `MaterializationSession` record whether the request is allowed or denied.
 
 ## 9. Burn and teardown semantics
 

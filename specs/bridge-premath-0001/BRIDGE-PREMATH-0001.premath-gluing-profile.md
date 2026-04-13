@@ -344,6 +344,10 @@ It SHALL contain at least:
 
 This makes the bridge-to-secret seam explicit.
 
+In this repo's normalized surface, that seam is concretized by
+`SECRET-0002`'s `MaterializationPlanRequest` and `MaterializationSession`
+objects.
+
 ### 7.3 `K_policy`
 
 `K_policy(Gamma)` is the policy overlap.

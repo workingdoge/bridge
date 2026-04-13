@@ -163,7 +163,7 @@ def _steps_for(backend_type: str, materializer_type: str) -> List[str]:
 
 def _handle_for(materializer: Dict[str, Any], request: Dict[str, Any], binding: Dict[str, Any]) -> Dict[str, str]:
     mt = materializer["materializer_type"]
-    secret = request["secret_id"]
+    secret = request["secret"]["secret_id"]
     rid = request["request_id"]
     cid = request["consumer"]["id"]
     if mt == "systemd-credential":
@@ -183,7 +183,7 @@ def _handle_for(materializer: Dict[str, Any], request: Dict[str, Any], binding: 
 
 def _backend_operation_for(backend: Dict[str, Any], binding: Dict[str, Any], request: Dict[str, Any]) -> Dict[str, str]:
     bt = backend["backend_type"]
-    secret = request["secret_id"]
+    secret = request["secret"]["secret_id"]
     rid = request["request_id"]
     if bt == "vault-dynamic":
         return {"kind": "issue-dynamic", "ref": f"lease://{secret}/{rid}"}
@@ -201,13 +201,36 @@ def plan_session(backend: Dict[str, Any], materializer: Dict[str, Any], binding:
     errors = validate_profiles(backend, materializer, binding)
 
     deny: List[str] = list(errors)
+    bridge = request["bridge"]
+    resource_binding = request["resource_binding"]
+    secret = request["secret"]
+    authority_bounds = request["authority_bounds"]
+
+    if bridge["decision_effect"] != "accept":
+        if bridge["decision_effect"] == "burn":
+            deny.extend([f"bridge burn: {reason}" for reason in bridge["burn_reasons"]])
+            if not bridge["burn_reasons"]:
+                deny.append("bridge decision burn denies new materialization sessions")
+        elif bridge["decision_effect"] == "deny":
+            deny.extend([f"bridge deny: {reason}" for reason in bridge["deny_reasons"]])
+            if not bridge["deny_reasons"]:
+                deny.append("bridge decision deny forbids materialization")
 
     if request["mode"] == "burn":
         deny.append("bridge mode burn denies new materialization sessions")
 
-    if request["secret_id"] != binding["secret_id"]:
+    if resource_binding["binding_id"] != binding["binding_id"]:
+        deny.append("request binding_id does not match selected binding")
+    if resource_binding["secret_id"] != binding["secret_id"]:
+        deny.append("resource binding secret_id does not match selected binding")
+    if resource_binding["backend_profile_id"] != backend["profile_id"]:
+        deny.append("request backend_profile_id does not match selected backend profile")
+    if resource_binding["materializer_profile_id"] != materializer["profile_id"]:
+        deny.append("request materializer_profile_id does not match selected materializer profile")
+
+    if secret["secret_id"] != binding["secret_id"]:
         deny.append("request secret_id does not match binding secret_id")
-    if request["secret_class"] != binding["secret_class"]:
+    if secret["secret_class"] != binding["secret_class"]:
         deny.append("request secret_class does not match binding secret_class")
     if request["requested_method"] != materializer["materializer_type"]:
         deny.append("requested_method does not match selected materializer profile")
@@ -218,8 +241,13 @@ def plan_session(backend: Dict[str, Any], materializer: Dict[str, Any], binding:
     ttl_limit = materializer["max_ttl_s"]
     if "max_ttl_s_override" in binding:
         ttl_limit = min(ttl_limit, binding["max_ttl_s_override"])
+    ttl_limit = min(ttl_limit, authority_bounds["effective_ttl_s"])
     if request["requested_ttl_s"] > ttl_limit:
         deny.append("requested_ttl_s exceeds effective TTL limit")
+    if authority_bounds["max_secret_materializations"] < 1:
+        deny.append("bridge authority budget forbids secret materialization")
+    if authority_bounds["non_exportable"] and not binding["non_exportable"]:
+        deny.append("binding widens a bridge non-exportable authority bound")
 
     need_host_attest = backend["trust_boundary"]["attestation_required"] or binding.get("policy_overrides", {}).get("require_host_attestation", False)
     if need_host_attest and not request["consumer"]["host_attestation"]["verified"]:
@@ -239,16 +267,18 @@ def plan_session(backend: Dict[str, Any], materializer: Dict[str, Any], binding:
         "session_id": f"session.{request['request_id']}",
         "decision": "deny" if deny else "allow",
         "session_state": "denied" if deny else "issued",
-        "bridge_trace": request["bridge_trace"],
+        "bridge_trace": bridge["trace"],
+        "bridge_decision_effect": bridge["decision_effect"],
         "request_id": request["request_id"],
-        "secret_id": request["secret_id"],
-        "secret_class": request["secret_class"],
+        "binding_id": binding["binding_id"],
+        "secret_id": secret["secret_id"],
+        "secret_class": secret["secret_class"],
         "backend_profile_id": backend["profile_id"],
         "materializer_profile_id": materializer["profile_id"],
         "consumer": {"kind": request["consumer"]["kind"], "id": request["consumer"]["id"]},
         "mode": request["mode"],
         "session_epoch": request["bridge_epoch"],
-        "secret_epoch": request.get("secret_epoch_min", 0),
+        "secret_epoch": secret.get("secret_epoch_min", 0),
         "issued_at": _iso(issued_at),
         "expires_at": _iso(expires_at),
         "backend_operation": {"kind": "none", "ref": "deny"} if deny else _backend_operation_for(backend, binding, request),
@@ -261,7 +291,7 @@ def plan_session(backend: Dict[str, Any], materializer: Dict[str, Any], binding:
             "consumer-exit": materializer["revalidation"]["on_consumer_exit"],
         }.items() if v],
         "constraints": {
-            "non_exportable": binding["non_exportable"],
+            "non_exportable": authority_bounds["non_exportable"],
             "model_reentry_prohibited": materializer["model_reentry_prohibited"],
             "log_redaction_required": materializer["log_redaction_required"],
             "destroy_on_exit": materializer["teardown"]["destroy_on_exit"],

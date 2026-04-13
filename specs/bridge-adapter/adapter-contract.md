@@ -78,6 +78,31 @@ The adapter does not decide burn policy by itself. It consumes authoritative bur
 - switch to safe/degraded handling,
 - require fresh restore authorization and fresh key epoch before returning to normal.
 
+## Secret-bound handoff
+
+When the requested resource resolves to a secret binding, the adapter SHALL
+assemble a `MaterializationPlanRequest` before any local secret materialization
+path is attempted.
+
+That handoff SHALL carry:
+
+- bridge trace and witness identity,
+- the bridge decision effect plus deny or burn reasons,
+- bridge policy-input and decision references,
+- explicit `binding_id` and resource-to-secret seam data,
+- secret identity and class,
+- consumer identity and requested method,
+- bridge-derived authority bounds such as effective TTL and materialization
+  budget.
+
+The adapter SHALL NOT widen bridge effective authority while building this
+handoff.
+
+If the bridge decision effect is `deny` or `burn`, the adapter MAY still emit a
+handoff object when local policy requires a denied materialization session for
+audit continuity, but the downstream planner SHALL NOT issue a usable secret
+handle from that non-accept effect.
+
 ## Canonicalization requirements
 
 The adapter **SHALL** canonicalize:
