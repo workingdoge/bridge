@@ -12,6 +12,18 @@ bd close <id>         # Complete work
 bd dolt push          # Push beads data to remote
 ```
 
+## Boundary
+
+- `bridge` owns the bridge domain stack: bridge adapter contract, secret suite, and domain-specific realization profiles such as `BRIDGE-PREMATH-0001`.
+- Premath kernel doctrine stays upstream in `fish/sites/premath/`; do not restate or mutate kernel authority here.
+- Keep live provider bindings, secrets runtime, and deployment proof in the consuming repo until they stabilize enough to generalize back into this project.
+
+## Repo Shape
+
+- `specs/` is the normalized active surface for bridge-owned specs.
+- `references/source-bundles/` holds imported source bundles for provenance only.
+- `PROVENANCE.md` records where imported material came from and which surface is authoritative here.
+
 ## Non-Interactive Shell Commands
 
 **ALWAYS use non-interactive flags** with file operations to avoid hanging on confirmation prompts.
