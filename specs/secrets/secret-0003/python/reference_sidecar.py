@@ -273,7 +273,7 @@ def build_audit_envelope(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog="bridge-sidecar")
     parser.add_argument("--catalog", required=True, type=Path)
     parser.add_argument("--deployment", required=True, type=Path)
     parser.add_argument("--request", required=True, type=Path)

@@ -20,11 +20,11 @@
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
 
       nixosModules = {
-        bridgeSidecar = import ./modules/nixos/bridge-sidecar.nix;
+        bridgeSidecar = import ./modules/nixos/bridge-sidecar.nix { inherit self; };
       };
 
       darwinModules = {
-        bridgeSidecar = import ./modules/darwin/bridge-sidecar.nix;
+        bridgeSidecar = import ./modules/darwin/bridge-sidecar.nix { inherit self; };
       };
 
       packages = forAllSystems (system:
@@ -59,9 +59,17 @@
               exec python3 ${./specs/secrets/secret-0002/python/reference_planner.py} "$@"
             '';
           };
+
+          bridgeSidecar = pkgs.writeShellApplication {
+            name = "bridge-sidecar";
+            runtimeInputs = [ pythonEnv ];
+            text = ''
+              exec python3 ${./specs/secrets/secret-0003/python/reference_sidecar.py} "$@"
+            '';
+          };
         in
         {
-          inherit bridgeConformanceCheck bridgePropertyCheck referencePlanner;
+          inherit bridgeConformanceCheck bridgePropertyCheck referencePlanner bridgeSidecar;
           default = bridgeConformanceCheck;
         });
 
@@ -77,6 +85,10 @@
         reference-planner = {
           type = "app";
           program = "${self.packages.${system}.referencePlanner}/bin/reference-planner";
+        };
+        bridge-sidecar = {
+          type = "app";
+          program = "${self.packages.${system}.bridgeSidecar}/bin/bridge-sidecar";
         };
         default = self.apps.${system}.bridge-conformance-check;
       });
@@ -104,6 +116,13 @@
             nativeBuildInputs = [ self.packages.${system}.referencePlanner ];
           } ''
             reference-planner --help >/dev/null
+            touch "$out"
+          '';
+
+          bridge-sidecar-help = pkgs.runCommand "bridge-sidecar-help" {
+            nativeBuildInputs = [ self.packages.${system}.bridgeSidecar ];
+          } ''
+            bridge-sidecar --help >/dev/null
             touch "$out"
           '';
         });

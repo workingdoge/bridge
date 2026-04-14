@@ -39,6 +39,7 @@ Nix surface:
 - `nix run .#bridge-conformance-check`
 - `nix run .#bridge-property-check`
 - `nix run .#reference-planner -- --help`
+- `nix run .#bridge-sidecar -- --help`
 - `inputs.bridge.nixosModules.bridgeSidecar`
 - `inputs.bridge.darwinModules.bridgeSidecar`
 - `nix flake check`
@@ -47,11 +48,17 @@ Module surface:
 
 - the flake exports repo-owned `bridgeSidecar` modules for NixOS and
   nix-darwin
+- the flake also exports a repo-owned reference package at
+  `packages.<system>.bridgeSidecar`
 - these are normalized consumer modules derived from the `SECRET-0003` deploy
   examples under `specs/secrets/secret-0003/deploy/`
-- they require the consuming repo to provide the actual `bridge-sidecar`
-  package plus provider catalog and deployment profile paths
+- the modules default `services.bridgeSidecar.package` to that reference
+  package
+- consuming repos still provide the provider catalog and deployment profile
+  paths
 - this is intentionally a module surface first, not a broad `lib.*` API
+- the exported package is the `SECRET-0003` reference harness, not a
+  production-hardened sidecar
 
 Example:
 

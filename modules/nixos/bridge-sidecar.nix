@@ -1,4 +1,5 @@
-{ config, lib, ... }:
+{ self }:
+{ config, lib, pkgs, ... }:
 let
   cfg = config.services.bridgeSidecar;
 in
@@ -8,6 +9,8 @@ in
 
     package = lib.mkOption {
       type = lib.types.package;
+      default = self.packages.${pkgs.stdenv.hostPlatform.system}.bridgeSidecar;
+      defaultText = lib.literalExpression "inputs.bridge.packages.${pkgs.stdenv.hostPlatform.system}.bridgeSidecar";
       description = "Package providing the bridge-sidecar binary.";
     };
 

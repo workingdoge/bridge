@@ -33,6 +33,8 @@ nix flake check
 - `scripts/bridge-conformance-check.sh` is the repo-owned conformance surface.
 - `flake.nix` exports the repo-owned Nix apps, checks, dev shell, and module
   surface.
+- The exported `bridgeSidecar` package is a reference harness over
+  `SECRET-0003`, not a production sidecar.
 - `PROVENANCE.md` records where imported material came from and which surface is authoritative here.
 
 ## Non-Interactive Shell Commands
