@@ -77,8 +77,11 @@ require_path "specs/bridge-premath-0001/BRIDGE-PREMATH-0001.premath-gluing-profi
 require_path "specs/secrets/README.md"
 require_path "specs/secrets/secret-0001/SECRET-0001.secret-object-and-lifecycle-core.md"
 require_path "specs/secrets/secret-0002/SHA256SUMS.txt"
+require_path "specs/secrets/secret-0002/SIGNER-SESSION-CONTRACT.md"
 require_path "specs/secrets/secret-0002/schemas/materialization-plan-request.schema.json"
 require_path "specs/secrets/secret-0002/schemas/materialization-session.schema.json"
+require_path "specs/secrets/secret-0002/schemas/signature-request.schema.json"
+require_path "specs/secrets/secret-0002/schemas/signature-response.schema.json"
 require_path "specs/secrets/secret-0003/SHA256SUMS.txt"
 require_path "scripts/bridge-conformance-check.sh"
 
@@ -95,9 +98,14 @@ require_text "specs/TYPE-FAMILIES.md" "Admission"
 require_text "specs/TYPE-FAMILIES.md" "Secret Core"
 require_text "specs/TYPE-FAMILIES.md" "Realization"
 require_text "specs/TYPE-FAMILIES.md" "Audit"
+require_text "specs/TYPE-FAMILIES.md" "SignatureRequest"
+require_text "specs/TYPE-FAMILIES.md" "SignatureResponse"
 require_text "specs/bridge-adapter/adapter-contract.md" "MaterializationPlanRequest"
 require_text "specs/bridge-premath-0001/BRIDGE-PREMATH-0001.premath-gluing-profile.md" "MaterializationPlanRequest"
 require_text "specs/secrets/secret-0002/SECRET-0002.backend-and-materialization-profile.md" "Bridge-to-secret handoff"
+require_text "specs/secrets/secret-0002/SIGNER-SESSION-CONTRACT.md" "types-first"
+require_text "specs/secrets/secret-0002/SIGNER-SESSION-CONTRACT.md" "SignatureRequest"
+require_text "specs/secrets/secret-0002/SIGNER-SESSION-CONTRACT.md" "SignatureResponse"
 
 run_python "$repo_root" <<'PY'
 from __future__ import annotations

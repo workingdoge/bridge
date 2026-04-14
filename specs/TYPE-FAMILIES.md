@@ -92,6 +92,8 @@ Primary types:
 - `BackendBinding`
 - `MaterializationPlanRequest`
 - `MaterializationSession`
+- `SignatureRequest`
+- `SignatureResponse`
 - session handle kind
 - teardown policy
 

@@ -7,7 +7,7 @@ Current layout:
 - `TYPE-FAMILIES.md` canonical map of the stable bridge type families
 - `bridge-adapter/` bridge adapter contract, schemas, examples, and mapping
 - `secrets/secret-0001/` secret object and lifecycle core
-- `secrets/secret-0002/` backend and materialization profile
+- `secrets/secret-0002/` backend and materialization profile plus signer-session edge
 - `secrets/secret-0003/` provider integration, attestation, audit, deployment
 - `bridge-premath-0001/` bridge-specific Premath realization profile
 

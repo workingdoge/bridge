@@ -72,6 +72,15 @@ The bridge-owned secret surface is about bounded issuance, TTL, revocation,
 mode, and teardown. It is not a license to hand ambient power to a caller or a
 model.
 
+For `signing-key` sessions, downstream consumers SHOULD continue with a small
+typed protocol:
+
+- `MaterializationSession` as the session-open artifact
+- `SignatureRequest` over the local signer handle
+- `SignatureResponse` as the bounded signing result
+
+This is a typed session edge, not a signer DSL.
+
 ### 4) Burn and restore
 
 Bridge mode artifacts live under:
@@ -97,6 +106,8 @@ Good concrete starting points:
 - `specs/secrets/secret-0002/examples/example.plan-request.burn.json`
 - `specs/secrets/secret-0002/examples/generated.materialization-session.allow.json`
 - `specs/secrets/secret-0002/examples/generated.materialization-session.deny.json`
+- `specs/secrets/secret-0002/examples/example.signature-request.signing-key.json`
+- `specs/secrets/secret-0002/examples/generated.signature-response.signing-key.allow.json`
 
 ## Conformance
 

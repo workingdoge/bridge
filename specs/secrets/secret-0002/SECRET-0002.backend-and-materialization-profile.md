@@ -238,6 +238,9 @@ A session SHALL include:
 
 A session SHALL NOT include raw plaintext secret values.
 
+For `signing-key` sessions, the narrow post-session operation edge is further
+spelled out in `SIGNER-SESSION-CONTRACT.md`.
+
 ## 8. Required planning algorithm
 
 A conforming planner SHALL:
