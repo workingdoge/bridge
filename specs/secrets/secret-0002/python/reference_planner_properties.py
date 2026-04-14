@@ -59,6 +59,91 @@ def issued_ttl_seconds(session: dict) -> int:
 
 class ReferencePlannerPropertyTests(unittest.TestCase):
     @settings(deadline=None, max_examples=16)
+    @given(seed=st.sampled_from(["analytics", "signing"]))
+    def test_host_attestation_failure_denies_session(self, seed: str) -> None:
+        backend, materializer, binding, request = seed_case(seed)
+        request["consumer"]["host_attestation"]["verified"] = False
+
+        session = plan_session(backend, materializer, binding, request)
+
+        self.assertEqual(session["decision"], "deny")
+        self.assertEqual(session["session_state"], "denied")
+        self.assertIn("host attestation failed", session["deny_reasons"])
+        self.assertEqual(session["handle"]["kind"], "deny")
+
+    @settings(deadline=None, max_examples=8)
+    def test_process_attestation_failure_denies_session(self) -> None:
+        backend, materializer, binding, request = signing_seed()
+        request["consumer"]["process_attestation"]["verified"] = False
+
+        session = plan_session(backend, materializer, binding, request)
+
+        self.assertEqual(session["decision"], "deny")
+        self.assertEqual(session["session_state"], "denied")
+        self.assertIn("process attestation failed", session["deny_reasons"])
+        self.assertEqual(session["handle"]["kind"], "deny")
+
+    @settings(deadline=None, max_examples=32)
+    @given(
+        seed=st.sampled_from(["analytics", "signing"]),
+        mismatch=st.sampled_from(
+            [
+                "resource_binding.binding_id",
+                "resource_binding.secret_id",
+                "resource_binding.backend_profile_id",
+                "resource_binding.materializer_profile_id",
+                "secret.secret_id",
+                "secret.secret_class",
+                "requested_method",
+            ]
+        ),
+    )
+    def test_request_binding_mismatch_denies_session(self, seed: str, mismatch: str) -> None:
+        backend, materializer, binding, request = seed_case(seed)
+
+        if mismatch == "resource_binding.binding_id":
+            request["resource_binding"]["binding_id"] = "binding.unexpected"
+            expected_reason = "request binding_id does not match selected binding"
+        elif mismatch == "resource_binding.secret_id":
+            request["resource_binding"]["secret_id"] = "secret.unexpected"
+            expected_reason = "resource binding secret_id does not match selected binding"
+        elif mismatch == "resource_binding.backend_profile_id":
+            request["resource_binding"]["backend_profile_id"] = "backend.unexpected"
+            expected_reason = "request backend_profile_id does not match selected backend profile"
+        elif mismatch == "resource_binding.materializer_profile_id":
+            request["resource_binding"]["materializer_profile_id"] = "materializer.unexpected"
+            expected_reason = "request materializer_profile_id does not match selected materializer profile"
+        elif mismatch == "secret.secret_id":
+            request["secret"]["secret_id"] = "secret.unexpected"
+            expected_reason = "request secret_id does not match binding secret_id"
+        elif mismatch == "secret.secret_class":
+            request["secret"]["secret_class"] = "password"
+            expected_reason = "request secret_class does not match binding secret_class"
+        else:
+            request["requested_method"] = "agent-proxy"
+            expected_reason = "requested_method does not match selected materializer profile"
+
+        session = plan_session(backend, materializer, binding, request)
+
+        self.assertEqual(session["decision"], "deny")
+        self.assertEqual(session["session_state"], "denied")
+        self.assertIn(expected_reason, session["deny_reasons"])
+        self.assertEqual(session["handle"]["kind"], "deny")
+
+    @settings(deadline=None, max_examples=16)
+    @given(seed=st.sampled_from(["analytics", "signing"]))
+    def test_zero_materialization_budget_denies_session(self, seed: str) -> None:
+        backend, materializer, binding, request = seed_case(seed)
+        request["authority_bounds"]["max_secret_materializations"] = 0
+
+        session = plan_session(backend, materializer, binding, request)
+
+        self.assertEqual(session["decision"], "deny")
+        self.assertEqual(session["session_state"], "denied")
+        self.assertIn("bridge authority budget forbids secret materialization", session["deny_reasons"])
+        self.assertEqual(session["handle"]["kind"], "deny")
+
+    @settings(deadline=None, max_examples=16)
     @given(
         seed=st.sampled_from(["analytics", "signing"]),
         effect=st.sampled_from(["deny", "burn"]),
