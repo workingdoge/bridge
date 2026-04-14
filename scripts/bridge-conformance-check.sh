@@ -7,6 +7,7 @@ Usage: bridge-conformance-check.sh [--repo <path>]
 
 Checks the repo-owned bridge contract surface:
 - required authority/shape files exist
+- required shared-skill files exist
 - authority split text is present
 - JSON contracts and examples under specs/ parse cleanly
 - checksum manifests match the files they govern
@@ -64,6 +65,8 @@ run_python() {
 require_path "README.md"
 require_path "PROVENANCE.md"
 require_path "AGENTS.md"
+require_path ".agents/skills/bridge/SKILL.md"
+require_path ".agents/skills/bridge/references/BRIDGE-FLOW.md"
 require_path "references/source-bundles/SHA256SUMS.txt"
 require_path "specs/README.md"
 require_path "specs/bridge-adapter/SHA256SUMS.txt"
@@ -81,6 +84,9 @@ require_path "scripts/bridge-conformance-check.sh"
 require_text "README.md" "Premath kernel doctrine stays upstream"
 require_text "PROVENANCE.md" '`bridge` owns the normalized domain surface imported under `specs/`.'
 require_text "AGENTS.md" '`references/source-bundles/` holds imported source bundles for provenance only.'
+require_text ".agents/skills/bridge/SKILL.md" "MaterializationPlanRequest"
+require_text ".agents/skills/bridge/SKILL.md" "MaterializationSession"
+require_text ".agents/skills/bridge/references/BRIDGE-FLOW.md" "scripts/bridge-conformance-check.sh"
 require_text "specs/bridge-adapter/adapter-contract.md" "MaterializationPlanRequest"
 require_text "specs/bridge-premath-0001/BRIDGE-PREMATH-0001.premath-gluing-profile.md" "MaterializationPlanRequest"
 require_text "specs/secrets/secret-0002/SECRET-0002.backend-and-materialization-profile.md" "Bridge-to-secret handoff"
