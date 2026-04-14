@@ -19,6 +19,8 @@ The caller never supplies `preflight` booleans directly.
 ## Files
 
 - `adapter-contract.md` — normative contract and assembly rules
+- `identity-admission-profile.md` — local identity-admission reading of the
+  bridge request, authority, admission, and handoff surfaces
 - `provider-mapping.yaml` — which provider populates which field
 - `schemas/authorize.request.schema.json` — external request
 - `schemas/provider-results.schema.json` — authoritative provider facts
