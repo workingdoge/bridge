@@ -31,6 +31,11 @@
         let
           pkgs = nixpkgs.legacyPackages.${system};
           pythonEnv = pkgs.python3.withPackages (ps: with ps; [ jsonschema hypothesis ]);
+          bridgeSidecarRuntime = pkgs.runCommand "bridge-sidecar-runtime" {} ''
+            mkdir -p "$out/share/bridge-sidecar"
+            cp -R ${./specs/secrets/secret-0003/python} "$out/share/bridge-sidecar/python"
+            cp -R ${./specs/secrets/secret-0003/schemas} "$out/share/bridge-sidecar/schemas"
+          '';
 
           bridgeConformanceCheck = pkgs.writeShellApplication {
             name = "bridge-conformance-check";
@@ -64,7 +69,9 @@
             name = "bridge-sidecar";
             runtimeInputs = [ pythonEnv ];
             text = ''
-              exec python3 ${./specs/secrets/secret-0003/python/reference_sidecar.py} "$@"
+              runtime=${bridgeSidecarRuntime}/share/bridge-sidecar
+              export PYTHONPATH="$runtime/python''${PYTHONPATH:+:$PYTHONPATH}"
+              exec python3 "$runtime/python/reference_sidecar_server.py" --schema-dir "$runtime/schemas" "$@"
             '';
           };
         in

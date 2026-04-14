@@ -23,6 +23,39 @@ in
       type = lib.types.path;
       description = "Path to deployment profile JSON.";
     };
+
+    attestationResult = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to authoritative attestation result JSON.";
+    };
+
+    revocationSnapshot = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to authoritative revocation snapshot JSON.";
+    };
+
+    modeState = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to current mode state JSON.";
+    };
+
+    listenAddress = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Listen address for the reference sidecar.";
+    };
+
+    listenPort = lib.mkOption {
+      type = lib.types.port;
+      default = 8181;
+      description = "Listen port for the reference sidecar.";
+    };
+
+    auditLogPath = lib.mkOption {
+      type = lib.types.str;
+      default = "/var/lib/bridge-sidecar/audit-events.jsonl";
+      description = "Audit log path used by the reference sidecar.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -32,7 +65,7 @@ in
       after = [ "network-online.target" ];
 
       serviceConfig = {
-        ExecStart = "${cfg.package}/bin/bridge-sidecar --catalog ${cfg.providerCatalog} --deployment ${cfg.deploymentProfile}";
+        ExecStart = "${cfg.package}/bin/bridge-sidecar --catalog ${cfg.providerCatalog} --deployment ${cfg.deploymentProfile} --attestation ${cfg.attestationResult} --revocation ${cfg.revocationSnapshot} --mode ${cfg.modeState} --listen ${cfg.listenAddress}:${toString cfg.listenPort} --audit-log ${cfg.auditLogPath}";
         Restart = "on-failure";
         DynamicUser = true;
         NoNewPrivileges = true;

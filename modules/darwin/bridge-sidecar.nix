@@ -24,6 +24,39 @@ in
       description = "Path to deployment profile JSON.";
     };
 
+    attestationResult = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to authoritative attestation result JSON.";
+    };
+
+    revocationSnapshot = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to authoritative revocation snapshot JSON.";
+    };
+
+    modeState = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to current mode state JSON.";
+    };
+
+    listenAddress = lib.mkOption {
+      type = lib.types.str;
+      default = "127.0.0.1";
+      description = "Listen address for the reference sidecar.";
+    };
+
+    listenPort = lib.mkOption {
+      type = lib.types.port;
+      default = 8181;
+      description = "Listen port for the reference sidecar.";
+    };
+
+    auditLogPath = lib.mkOption {
+      type = lib.types.str;
+      default = "/var/lib/bridge-sidecar/audit-events.jsonl";
+      description = "Audit log path used by the reference sidecar.";
+    };
+
     workingDirectory = lib.mkOption {
       type = lib.types.str;
       default = "/var/lib/bridge-sidecar";
@@ -48,10 +81,13 @@ in
       serviceConfig = {
         ProgramArguments = [
           "${cfg.package}/bin/bridge-sidecar"
-          "--catalog"
-          (toString cfg.providerCatalog)
-          "--deployment"
-          (toString cfg.deploymentProfile)
+          "--catalog" (toString cfg.providerCatalog)
+          "--deployment" (toString cfg.deploymentProfile)
+          "--attestation" (toString cfg.attestationResult)
+          "--revocation" (toString cfg.revocationSnapshot)
+          "--mode" (toString cfg.modeState)
+          "--listen" "${cfg.listenAddress}:${toString cfg.listenPort}"
+          "--audit-log" cfg.auditLogPath
         ];
         KeepAlive = true;
         RunAtLoad = true;

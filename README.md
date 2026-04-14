@@ -54,11 +54,11 @@ Module surface:
   examples under `specs/secrets/secret-0003/deploy/`
 - the modules default `services.bridgeSidecar.package` to that reference
   package
-- consuming repos still provide the provider catalog and deployment profile
-  paths
+- consuming repos still provide the provider catalog, deployment profile,
+  attestation result, revocation snapshot, and mode state paths
 - this is intentionally a module surface first, not a broad `lib.*` API
-- the exported package is the `SECRET-0003` reference harness, not a
-  production-hardened sidecar
+- the exported package is a bounded reference HTTP sidecar over `SECRET-0003`,
+  not a production-hardened deployment
 
 Example:
 
@@ -77,6 +77,9 @@ Example:
             package = pkgs.callPackage ./pkgs/bridge-sidecar.nix { };
             providerCatalog = ./provider-catalog.json;
             deploymentProfile = ./deployment-profile.json;
+            attestationResult = ./attestation-result.json;
+            revocationSnapshot = ./revocation-snapshot.json;
+            modeState = ./mode-state.json;
           };
         })
       ];
