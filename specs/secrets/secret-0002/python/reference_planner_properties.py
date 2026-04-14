@@ -23,33 +23,9 @@ EXAMPLES = ROOT / "examples"
 def load_example(name: str):
     return load_json(EXAMPLES / name)
 
-
-def normalize_backend_example_for_planner(example: dict) -> dict:
-    normalized = deepcopy(example)
-    capabilities = normalized.get("capabilities")
-    if isinstance(capabilities, dict):
-        # Current example profiles still use a boolean capability map while the
-        # planner schema expects an explicit capability list. Normalize the
-        # example seed here so this harness stays focused on planner laws.
-        if normalized["backend_type"] == "vault-dynamic":
-            normalized["capabilities"] = ["issue-dynamic", "lookup-reference", "revoke-lease"]
-        elif normalized["backend_type"] == "hsm-rooted":
-            normalized["capabilities"] = ["sign", "lookup-reference", "disable-key"]
-        else:
-            normalized["capabilities"] = ["lookup-reference"]
-    audit = normalized.get("audit")
-    if isinstance(audit, dict) and "emit_required" in audit:
-        # Current example profiles still carry the older audit shape here.
-        normalized["audit"] = {
-            "backend_events_required": bool(audit.get("emit_required", True)),
-            "authoritative_time_required": True,
-        }
-    return normalized
-
-
 def analytics_seed():
     return (
-        normalize_backend_example_for_planner(load_example("example.backend-profile.vault-dynamic.json")),
+        deepcopy(load_example("example.backend-profile.vault-dynamic.json")),
         deepcopy(load_example("example.materializer-profile.systemd-credential.json")),
         deepcopy(load_example("example.backend-binding.analytics-db.json")),
         deepcopy(load_example("example.plan-request.analytics-db.json")),
@@ -58,7 +34,7 @@ def analytics_seed():
 
 def signing_seed():
     return (
-        normalize_backend_example_for_planner(load_example("example.backend-profile.hsm-rooted-signing.json")),
+        deepcopy(load_example("example.backend-profile.hsm-rooted-signing.json")),
         deepcopy(load_example("example.materializer-profile.unix-socket-proxy.json")),
         deepcopy(load_example("example.backend-binding.signing-key.json")),
         deepcopy(load_example("example.plan-request.signing-key.json")),
