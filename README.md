@@ -41,6 +41,7 @@ Nix surface:
 - `nix run .#reference-planner -- --help`
 - `nix run .#bridge-sidecar -- --help`
 - `inputs.bridge.nixosModules.bridgeSidecar`
+- `inputs.bridge.nixosModules.bridgeAgentService`
 - `inputs.bridge.darwinModules.bridgeSidecar`
 - `nix flake check`
 
@@ -48,6 +49,8 @@ Module surface:
 
 - the flake exports repo-owned `bridgeSidecar` modules for NixOS and
   nix-darwin
+- the flake also exports a repo-owned NixOS `bridgeAgentService` reference
+  workload module
 - the flake also exports a repo-owned reference package at
   `packages.<system>.bridgeSidecar`
 - these are normalized consumer modules derived from the `SECRET-0003` deploy
@@ -56,6 +59,8 @@ Module surface:
   package
 - consuming repos still provide the provider catalog, deployment profile,
   attestation result, revocation snapshot, and mode state paths
+- consuming repos provide the actual workload package and executable when they
+  use `bridgeAgentService`
 - this is intentionally a module surface first, not a broad `lib.*` API
 - the exported package is a bounded reference HTTP sidecar over `SECRET-0003`,
   not a production-hardened deployment
@@ -71,15 +76,20 @@ Example:
       system = "x86_64-linux";
       modules = [
         bridge.nixosModules.bridgeSidecar
+        bridge.nixosModules.bridgeAgentService
         ({ pkgs, ... }: {
           services.bridgeSidecar = {
             enable = true;
-            package = pkgs.callPackage ./pkgs/bridge-sidecar.nix { };
             providerCatalog = ./provider-catalog.json;
             deploymentProfile = ./deployment-profile.json;
             attestationResult = ./attestation-result.json;
             revocationSnapshot = ./revocation-snapshot.json;
             modeState = ./mode-state.json;
+          };
+          services.bridgeAgentService = {
+            enable = true;
+            package = pkgs.callPackage ./pkgs/example-agent.nix { };
+            executable = "example-agent";
           };
         })
       ];

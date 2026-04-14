@@ -29,6 +29,8 @@ nix flake check
   bridge skill.
 - `specs/` is the normalized active surface for bridge-owned specs.
 - `modules/` is the repo-owned exported Nix module surface.
+- `modules/nixos/bridge-agent-service.nix` is the repo-owned reference
+  workload attachment surface for the sidecar.
 - `references/source-bundles/` holds imported source bundles for provenance only.
 - `scripts/bridge-conformance-check.sh` is the repo-owned conformance surface.
 - `flake.nix` exports the repo-owned Nix apps, checks, dev shell, and module

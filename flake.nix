@@ -21,6 +21,7 @@
 
       nixosModules = {
         bridgeSidecar = import ./modules/nixos/bridge-sidecar.nix { inherit self; };
+        bridgeAgentService = import ./modules/nixos/bridge-agent-service.nix;
       };
 
       darwinModules = {
@@ -103,6 +104,31 @@
       checks = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          bridgeAgentEval = nixpkgs.lib.nixosSystem {
+            system = "x86_64-linux";
+            modules = [
+              self.nixosModules.bridgeSidecar
+              self.nixosModules.bridgeAgentService
+              ({ pkgs, ... }: {
+                system.stateVersion = "25.05";
+                services.bridgeSidecar = {
+                  enable = true;
+                  listenAddress = "127.0.0.1";
+                  listenPort = 8181;
+                  providerCatalog = ./specs/secrets/secret-0003/examples/example.provider-catalog.json;
+                  deploymentProfile = ./specs/secrets/secret-0003/examples/example.deployment-profile.json;
+                  attestationResult = ./specs/secrets/secret-0003/examples/example.attestation-result.ok.json;
+                  revocationSnapshot = ./specs/secrets/secret-0003/examples/example.revocation-snapshot.clear.json;
+                  modeState = ./specs/secrets/secret-0003/examples/example.mode-state.normal.json;
+                };
+                services.bridgeAgentService = {
+                  enable = true;
+                  package = pkgs.hello;
+                  executable = "hello";
+                };
+              })
+            ];
+          };
         in
         {
           bridge-conformance-check = pkgs.runCommand "bridge-conformance-check" {
@@ -132,6 +158,10 @@
             bridge-sidecar --help >/dev/null
             touch "$out"
           '';
+
+          bridge-agent-service-eval = pkgs.writeText "bridge-agent-service-execstart" (
+            bridgeAgentEval.config.systemd.services.bridge-agent.serviceConfig.ExecStart + "\n"
+          );
         });
 
       devShells = forAllSystems (system:
