@@ -15,11 +15,12 @@ Repo map:
 
 - `.agents/skills/bridge/` repo-authored source of truth for the shared bridge
   skill
+- `modules/` repo-owned exported Nix module surface
 - `specs/` normalized active spec surface
 - `references/source-bundles/` retained source bundles for provenance
 - `scripts/bridge-conformance-check.sh` repo-owned conformance check
 - `flake.nix` minimal Nix export surface for repo checks and the reference
-  planner
+  planner plus module exports
 - `PROVENANCE.md` authority split and import record
 
 Workflow:
@@ -34,4 +35,41 @@ Nix surface:
 - `nix run .#bridge-conformance-check`
 - `nix run .#bridge-property-check`
 - `nix run .#reference-planner -- --help`
+- `inputs.bridge.nixosModules.bridgeSidecar`
+- `inputs.bridge.darwinModules.bridgeSidecar`
 - `nix flake check`
+
+Module surface:
+
+- the flake exports repo-owned `bridgeSidecar` modules for NixOS and
+  nix-darwin
+- these are normalized consumer modules derived from the `SECRET-0003` deploy
+  examples under `specs/secrets/secret-0003/deploy/`
+- they require the consuming repo to provide the actual `bridge-sidecar`
+  package plus provider catalog and deployment profile paths
+- this is intentionally a module surface first, not a broad `lib.*` API
+
+Example:
+
+```nix
+{
+  inputs.bridge.url = "path:/path/to/bridge";
+
+  outputs = { self, bridge, ... }: {
+    nixosConfigurations.example = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        bridge.nixosModules.bridgeSidecar
+        ({ pkgs, ... }: {
+          services.bridgeSidecar = {
+            enable = true;
+            package = pkgs.callPackage ./pkgs/bridge-sidecar.nix { };
+            providerCatalog = ./provider-catalog.json;
+            deploymentProfile = ./deployment-profile.json;
+          };
+        })
+      ];
+    };
+  };
+}
+```

@@ -19,6 +19,14 @@
     {
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-rfc-style);
 
+      nixosModules = {
+        bridgeSidecar = import ./modules/nixos/bridge-sidecar.nix;
+      };
+
+      darwinModules = {
+        bridgeSidecar = import ./modules/darwin/bridge-sidecar.nix;
+      };
+
       packages = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
