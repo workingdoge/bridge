@@ -33,7 +33,8 @@ Default order:
 3. keep upstream Premath doctrine and downstream runtime truth out of the same
    answer
 4. use the schemas and examples as the concrete surface
-5. propose the smallest domain-correct next slice
+5. organize answers around the stable type families before product names
+6. propose the smallest domain-correct next slice
 
 The core bridge flow is:
 
@@ -43,6 +44,15 @@ The core bridge flow is:
 - bridge decision and mode result
 - `MaterializationPlanRequest`
 - bounded `MaterializationSession`, handle, proxy, or denied session
+
+The stable type families are:
+
+- `Ingress`
+- `Authority`
+- `Admission`
+- `Secret Core`
+- `Realization`
+- `Audit`
 
 ## Workflow buckets
 

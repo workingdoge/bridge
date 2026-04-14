@@ -10,6 +10,9 @@ Boundary:
   normalization and conformance surfaces.
 - Live provider bindings, funded runtime, and first proof stay in downstream
   consumer repos until they generalize.
+- Organize the bridge surface around stable type families first:
+  `Ingress`, `Authority`, `Admission`, `Secret Core`, `Realization`, and
+  `Audit`.
 
 Repo map:
 
@@ -17,6 +20,7 @@ Repo map:
   skill
 - `modules/` repo-owned exported Nix module surface
 - `specs/` normalized active spec surface
+- `specs/TYPE-FAMILIES.md` canonical type-family map for interface shaping
 - `references/source-bundles/` retained source bundles for provenance
 - `scripts/bridge-conformance-check.sh` repo-owned conformance check
 - `flake.nix` minimal Nix export surface for repo checks and the reference
