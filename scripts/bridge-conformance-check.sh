@@ -147,7 +147,10 @@ def verify_manifest(manifest_path: Path) -> int:
     actual = {
         path.relative_to(base).as_posix()
         for path in base.rglob("*")
-        if path.is_file() and path.name != manifest_path.name
+        if path.is_file()
+        and path.name != manifest_path.name
+        and "__pycache__" not in path.parts
+        and path.suffix != ".pyc"
     }
     missing = sorted(actual - listed)
     if missing:

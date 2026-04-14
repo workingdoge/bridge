@@ -108,3 +108,11 @@ scripts/bridge-conformance-check.sh
 
 This checks the normalized bridge spec surface. It is not a substitute for
 downstream live-proof verification.
+
+After planner or bridge-to-secret handoff changes, also run:
+
+```bash
+scripts/bridge-property-check.sh
+```
+
+This is the semantic property harness for `SECRET-0002` planner invariants.

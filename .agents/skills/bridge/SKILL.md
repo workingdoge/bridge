@@ -103,7 +103,9 @@ Use when the task asks:
 
 Default moves:
 1. inspect the narrow examples and schemas involved
-2. run `scripts/bridge-conformance-check.sh` after repo changes
+2. run `scripts/bridge-conformance-check.sh` after normalized surface changes
+3. run `scripts/bridge-property-check.sh` when planner or bridge-to-secret
+   handoff behavior changes
 
 Goal:
 Keep the normalized bridge-owned surface coherent and reviewable.
