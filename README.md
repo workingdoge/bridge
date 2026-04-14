@@ -18,6 +18,8 @@ Repo map:
 - `specs/` normalized active spec surface
 - `references/source-bundles/` retained source bundles for provenance
 - `scripts/bridge-conformance-check.sh` repo-owned conformance check
+- `flake.nix` minimal Nix export surface for repo checks and the reference
+  planner
 - `PROVENANCE.md` authority split and import record
 
 Workflow:
@@ -26,3 +28,10 @@ Workflow:
 - claim with `bd update <id> --claim --json`
 - close with `bd close <id> --reason "..." --json`
 - run `scripts/bridge-conformance-check.sh` after spec-surface changes
+
+Nix surface:
+
+- `nix run .#bridge-conformance-check`
+- `nix run .#bridge-property-check`
+- `nix run .#reference-planner -- --help`
+- `nix flake check`

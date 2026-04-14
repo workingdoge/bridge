@@ -11,6 +11,10 @@ bd update <id> --claim  # Claim work atomically
 bd close <id>         # Complete work
 bd dolt push          # Push beads data to remote
 scripts/bridge-conformance-check.sh  # Verify normalized bridge surface
+nix run .#bridge-conformance-check   # Run the exported conformance app
+nix run .#bridge-property-check      # Run the exported planner-law app
+nix run .#reference-planner -- --help  # Show the planner entrypoint
+nix flake check
 ```
 
 ## Boundary
@@ -26,6 +30,7 @@ scripts/bridge-conformance-check.sh  # Verify normalized bridge surface
 - `specs/` is the normalized active surface for bridge-owned specs.
 - `references/source-bundles/` holds imported source bundles for provenance only.
 - `scripts/bridge-conformance-check.sh` is the repo-owned conformance surface.
+- `flake.nix` exports the minimal repo-owned Nix apps, checks, and dev shell.
 - `PROVENANCE.md` records where imported material came from and which surface is authoritative here.
 
 ## Non-Interactive Shell Commands

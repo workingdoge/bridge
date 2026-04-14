@@ -4,3 +4,5 @@
   surface, checksum manifests, and JSON contract/example files.
 - `bridge-property-check.sh`: runs semantic property checks for the
   `SECRET-0002` reference planner invariants.
+
+Both scripts are also exported through `flake.nix` as `nix run` apps.

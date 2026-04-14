@@ -8,6 +8,9 @@ Usage: bridge-property-check.sh [--repo <path>]
 Runs the repo-owned semantic property checks for the bridge-to-secret planner:
 - non-accept bridge decisions deny usable materialization sessions
 - burn mode denies new sessions
+- host/process attestation failures deny
+- request-to-binding mismatches deny
+- zero secret-materialization budget denies
 - issued TTL never exceeds the effective bound
 - non-exportable authority does not widen into forbidden plaintext-capable surfaces
 EOF

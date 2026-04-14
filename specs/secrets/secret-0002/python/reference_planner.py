@@ -36,6 +36,13 @@ def validate_schema(name: str, payload: Dict[str, Any]) -> None:
     jsonschema.validate(payload, load_schema(name))
 
 
+USAGE = (
+    "usage:\n"
+    "  reference_planner.py validate <backend.json> <materializer.json> <binding.json>\n"
+    "  reference_planner.py plan <backend.json> <materializer.json> <binding.json> <request.json>\n"
+)
+
+
 def _forbidden_plaintext_paths(value: Any, path: str = "$") -> List[str]:
     bad: List[str] = []
     if isinstance(value, dict):
@@ -311,13 +318,12 @@ def plan_session(backend: Dict[str, Any], materializer: Dict[str, Any], binding:
 
 
 def main(argv: List[str]) -> int:
+    if len(argv) < 2 or argv[1] in {"help", "-h", "--help"}:
+        print(USAGE, file=sys.stderr)
+        return 0
+
     if len(argv) < 5:
-        print(
-            "usage:\n"
-            "  reference_planner.py validate <backend.json> <materializer.json> <binding.json>\n"
-            "  reference_planner.py plan <backend.json> <materializer.json> <binding.json> <request.json>\n",
-            file=sys.stderr,
-        )
+        print(USAGE, file=sys.stderr)
         return 2
 
     cmd = argv[1]
