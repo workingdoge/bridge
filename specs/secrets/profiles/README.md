@@ -19,7 +19,15 @@ directory name, cross-referenced from their runtime code.
 
 - `wdog-v0-age-local/` — workingdoge-LLC v0 primary host. Age-encrypted
   files on local disk, read-gated by OS file permissions, file-backed
-  handle as the materialization artifact.
+  handle as the materialization artifact. Covers **host-runtime** secrets
+  materialized into `/var/lib/custody/secrets/`.
+- `wdog-operator-workstation-age-local/` — workingdoge-LLC operator
+  workstation-rooted **bootstrap** secrets (HCLOUD_TOKEN, Cloudflare
+  mutation token, etc.). Same age-file backend shape but routed to the
+  operator workstation recipient; materialized as ephemeral env vars
+  into a provisioning subprocess (`tofu apply`, `nixos-anywhere`) with
+  no persistence past subprocess exit. Disjoint from `wdog-v0-age-local`:
+  host-runtime and bootstrap secrets MUST NOT share recipients.
 
 ## Authoring a new profile
 
