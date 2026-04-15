@@ -1,7 +1,7 @@
 {
   "database": "dolt",
   "backend": "dolt",
-  "dolt_mode": "embedded",
+  "dolt_mode": "server",
   "dolt_database": "bridge",
   "project_id": "3117606d-2592-4f0c-9c7c-5cc8cd1effdd"
 }
