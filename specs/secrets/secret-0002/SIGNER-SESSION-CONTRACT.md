@@ -24,6 +24,8 @@ This note makes that edge explicit so a downstream repo can move from direct
 keystore access toward:
 
 - a session-open artifact,
+- a typed composite open-session artifact when the downstream protocol needs
+  more than a bare handle,
 - a narrow local handle such as `SIGNER_SOCKET`,
 - typed sign request/response messages,
 - burn/revoke/expiry semantics carried by the session.
@@ -35,6 +37,8 @@ The stable semantic center is a set of types, not a mini language.
 Conforming implementations SHOULD use:
 
 - existing `MaterializationSession` as the session-open record,
+- `SessionOpenArtifact` when the protocol requires additional open-session
+  settlement material beyond the issued session,
 - a bounded handle such as `socket-ref` or `opaque-handle`,
 - typed `SignatureRequest` and `SignatureResponse` objects,
 - repo-local protocol transport only as a realization detail.
@@ -47,6 +51,10 @@ be treated as the canonical contract.
 
 For signer use, the canonical session-open artifact remains
 `MaterializationSession`.
+
+Some downstream protocols need a composite settlement artifact in addition to
+the issued session record. In those cases, the conforming extension type is
+`SessionOpenArtifact`.
 
 A signing session is conforming only when all of the following hold:
 
@@ -65,6 +73,11 @@ The session-open artifact carries:
 - allowed consumer identity,
 - revalidation triggers and teardown actions,
 - the local signer handle reference.
+
+When the downstream protocol requires an explicit open-settlement artifact,
+`SessionOpenArtifact` carries the bounded protocol-specific material derived
+from the session and authority context without widening into reusable key
+material.
 
 ## Type surface
 
@@ -141,15 +154,32 @@ It identifies:
 - the produced signature or opaque signature reference,
 - deny reasons when refused.
 
+### 7. Session open artifact
+
+`SessionOpenArtifact` is the typed composite artifact returned when a
+downstream protocol needs explicit open-session settlement material after a
+`MaterializationSession` has been issued.
+
+It identifies:
+
+- the session and bridge trace it is bound to,
+- the artifact action and credential family it serves,
+- the signed open transaction bytes or equivalent open operation bytes,
+- the deterministic `channel_id`,
+- the initial `cumulative_amount`,
+- the initial voucher signature or opaque voucher reference,
+- deny reasons when the session cannot be opened.
+
 ## Minimal protocol
 
 The minimal protocol is:
 
 1. obtain a conforming `MaterializationSession`
-2. project the local handle from `handle.ref`
-3. send one `SignatureRequest`
-4. receive one `SignatureResponse`
-5. close, expire, revoke, or burn the session
+2. if needed by the downstream protocol, derive one `SessionOpenArtifact`
+3. project the local handle from `handle.ref`
+4. send one `SignatureRequest`
+5. receive one `SignatureResponse`
+6. close, expire, revoke, or burn the session
 
 That is a small typed protocol, not a general-purpose signer language.
 
@@ -159,6 +189,8 @@ A conforming signer broker SHALL:
 
 - reject requests for nonexistent, expired, revoked, denied, or burned
   sessions;
+- reject open-artifact derivation for nonexistent, expired, revoked, denied, or
+  burned sessions;
 - reject requests whose consumer identity does not match the session binding;
 - refuse to widen a non-exportable session into reusable key material;
 - emit deny responses rather than silently downgrading policy failures;
@@ -174,6 +206,8 @@ Downstream repos SHOULD move from:
 toward:
 
 - `MaterializationSession`
+- `SessionOpenArtifact` when a session-class protocol needs explicit
+  open-settlement material
 - local `socket-ref` or `opaque-handle`
 - typed `SignatureRequest`
 - typed `SignatureResponse`

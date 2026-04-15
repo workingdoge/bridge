@@ -76,6 +76,8 @@ For `signing-key` sessions, downstream consumers SHOULD continue with a small
 typed protocol:
 
 - `MaterializationSession` as the session-open artifact
+- `SessionOpenArtifact` when the downstream protocol needs explicit composite
+  open-session settlement material
 - `SignatureRequest` over the local signer handle
 - `SignatureResponse` as the bounded signing result
 
@@ -106,6 +108,7 @@ Good concrete starting points:
 - `specs/secrets/secret-0002/examples/example.plan-request.burn.json`
 - `specs/secrets/secret-0002/examples/generated.materialization-session.allow.json`
 - `specs/secrets/secret-0002/examples/generated.materialization-session.deny.json`
+- `specs/secrets/secret-0002/examples/generated.session-open-artifact.signing-key.allow.json`
 - `specs/secrets/secret-0002/examples/example.signature-request.signing-key.json`
 - `specs/secrets/secret-0002/examples/generated.signature-response.signing-key.allow.json`
 
