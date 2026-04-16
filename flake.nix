@@ -1,11 +1,32 @@
 {
   description = "bridge: canonical bridge and secret domain contracts with repo-owned conformance surfaces";
 
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+  nixConfig = {
+    extra-trusted-public-keys = "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw=";
+    extra-substituters = "https://devenv.cachix.org";
   };
 
-  outputs = { self, nixpkgs }:
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    # Keep Codex reproducible while consuming the shared tusk wiring.
+    llm-agents.url = "github:numtide/llm-agents.nix?rev=b91b0e1583091847cf4f8a8fcaad92d66227abfb";
+    devenv-root = {
+      url = "file+file:///dev/null";
+      flake = false;
+    };
+    devenv = {
+      url = "github:cachix/devenv";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    tusk = {
+      url = "git+https://github.com/workingdoge/tusk?ref=main&rev=e539c9b795640663b54c638b378315e0ae20b784";
+      inputs.devenv.follows = "devenv";
+      inputs.llm-agents.follows = "llm-agents";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+  };
+
+  outputs = inputs@{ self, nixpkgs, tusk, devenv, ... }:
     let
       systems = [
         "aarch64-darwin"
@@ -31,12 +52,35 @@
       packages = forAllSystems (system:
         let
           pkgs = nixpkgs.legacyPackages.${system};
+          tuskBeads = tusk.apps.${system}.beads.program;
+          tuskCodex = tusk.apps.${system}.codex.program;
+          beads = pkgs.writeShellApplication {
+            name = "bd";
+            text = ''
+              exec ${tuskBeads} "$@"
+            '';
+          };
           pythonEnv = pkgs.python3.withPackages (ps: with ps; [ jsonschema hypothesis ]);
           bridgeSidecarRuntime = pkgs.runCommand "bridge-sidecar-runtime" {} ''
             mkdir -p "$out/share/bridge-sidecar"
             cp -R ${./specs/secrets/secret-0003/python} "$out/share/bridge-sidecar/python"
             cp -R ${./specs/secrets/secret-0003/schemas} "$out/share/bridge-sidecar/schemas"
           '';
+          repoCodex = pkgs.writeShellApplication {
+            name = "codex";
+            runtimeInputs = [
+              beads
+              pkgs.git
+            ];
+            text = ''
+              set -eu
+
+              tracker_root="''${BEADS_WORKSPACE_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+              export BEADS_WORKSPACE_ROOT="$tracker_root"
+
+              exec ${tuskCodex} "$@"
+            '';
+          };
 
           bridgeConformanceCheck = pkgs.writeShellApplication {
             name = "bridge-conformance-check";
@@ -77,11 +121,26 @@
           };
         in
         {
-          inherit bridgeConformanceCheck bridgePropertyCheck referencePlanner bridgeSidecar;
+          inherit beads bridgeConformanceCheck bridgePropertyCheck referencePlanner bridgeSidecar;
+          codex = repoCodex;
           default = bridgeConformanceCheck;
         });
 
       apps = forAllSystems (system: {
+        beads = {
+          type = "app";
+          program = "${self.packages.${system}.beads}/bin/bd";
+          meta = {
+            description = "Beads CLI";
+          };
+        };
+        codex = {
+          type = "app";
+          program = "${self.packages.${system}.codex}/bin/codex";
+          meta = {
+            description = "Repo-pinned Codex";
+          };
+        };
         bridge-conformance-check = {
           type = "app";
           program = "${self.packages.${system}.bridgeConformanceCheck}/bin/bridge-conformance-check";
@@ -168,15 +227,44 @@
         let
           pkgs = nixpkgs.legacyPackages.${system};
           pythonEnv = pkgs.python3.withPackages (ps: with ps; [ jsonschema hypothesis ]);
+          devShellModule = {
+            imports = [
+              devenv.flakeModules.readDevenvRoot
+              tusk.devenvModules.tusk-skill
+              tusk.devenvModules.ops-skill
+              tusk.devenvModules.bridge-skill
+            ];
+
+            tusk.consumer = {
+              enable = true;
+              extraPackages = [
+                pkgs.jq
+                pkgs.python3Minimal
+                pythonEnv
+                pkgs.ripgrep
+              ];
+              smokeCheck.skillChecks = [
+                ".codex/skills/tusk"
+                ".codex/skills/ops"
+                ".codex/skills/bridge"
+              ];
+              extraEnterShell = ''
+                [ -f "$DEVENV_ROOT/.envrc.local" ] && . "$DEVENV_ROOT/.envrc.local"
+                [ -f "$DEVENV_ROOT/.env.local" ] && . "$DEVENV_ROOT/.env.local"
+
+                echo "bridge devenv shell"
+                echo "  nix run .#bridge-conformance-check"
+                echo "  nix run .#bridge-property-check"
+                echo "  nix run .#reference-planner -- --help"
+              '';
+            };
+          };
         in
         {
-          default = pkgs.mkShell {
-            packages = [
-              pkgs.jq
-              pkgs.python3Minimal
-              pythonEnv
-              pkgs.ripgrep
-            ];
+          default = tusk.lib.mkRepoShell {
+            inherit system pkgs;
+            flakeInputs = inputs;
+            modules = [ devShellModule ];
           };
         });
     };
