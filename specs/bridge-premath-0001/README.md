@@ -7,6 +7,8 @@ secret-management suite.
 
 - `BRIDGE-PREMATH-0001.premath-gluing-profile.md`
   - normative draft profile
+- `bridge-kb-proof-boundary.md`
+  - bridge-owned proof boundary for consuming the carried `NERVE-KB` seam
 - `ts/interfaces.ts`
   - starter interface surface
 - `schemas/premath-context.schema.json`
@@ -31,12 +33,15 @@ secret-management suite.
 - explicit context morphisms for pullback
 - an explicit bridge-to-secret seam
 - a global glued object with compatibility witnesses
+- one bridge-owned boundary note for the first `NERVE-KB` proof seam
 
 ## What it intentionally does not do
 
+- Premath kernel doctrine stays upstream
 - it does not put raw plaintext secret material in the global object
 - it does not treat restore as an ordinary inverse to burn
 - it does not claim `Sigma_f` / `Pi_f` support in the core profile
+- it does not make `bridge` the semantic or runtime home of `NERVE-KB`
 
 ## Suggested next implementation step
 

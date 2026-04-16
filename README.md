@@ -7,7 +7,7 @@ input.
 
 ## Boundary
 
-- **Premath kernel doctrine is upstream** in `fish/sites/premath/`. If you need
+- **Premath kernel doctrine stays upstream** in `fish/sites/premath/`. If you need
   kernel types, depend on premath directly — bridge does not restate them.
 - **Bridge owns** the adapter contract, the three-part secret suite, the
   bridge-premath realization profile, and the conformance surface. Schemas,
