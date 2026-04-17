@@ -67,6 +67,62 @@ The Premath kernel requires:
 This profile supplies those ingredients for the bridge + secret suite and fixes
 their intended interpretation.
 
+### 2.1 Cited premath modules
+
+The premath kernel surface this profile realizes lives in
+`fish/sites/premath/` under:
+
+- `specs/raw/asp/ASP0.md` — the Admissible Simplex Presentations
+  substrate. Supplies the category of contexts `C` and the
+  coverage-building mechanism. Every admissible object in this
+  profile's §4 category is an ASP presentation whose role colors are
+  the context coordinate families.
+- `specs/raw/ident/IDENT0.md` — the first concrete profile over
+  `ASP0`. Fixes an ordered master role simplex
+  `[issuer, subject, credential, scope, epoch]` with trust,
+  binding, grants, freshness, and revocation witnesses. §4.2.1
+  Request coordinates (`subject_id`, `witness_jti`, `consumer_id`)
+  and §4.2.5 Provider-fact coordinates (`issuer_epoch`) are the
+  bridge-side carriers of that simplex.
+- `specs/raw/ident/JWT0.md`, `JWT0-OBS.md`, `JWT0-SEARCH.md`, and
+  `JWT1-JWKS0.md` — candidate backend realization profiles for
+  identity at the bridge + secret seam. A conforming implementation
+  MAY adopt these as concrete backend+materializer profiles for the
+  identity-class secret-suite slot; doing so is NOT required by this
+  profile, but this profile names them as the first concrete place
+  identity backends can land.
+
+Citations are path-specific so downstream consumers (bridge
+admission profiles, SECRET-0002 instances, workingdoge IAM
+realization) can trace any bridge context coordinate back to the
+premath module that grounds it.
+
+### 2.2 Identity simplex as first concrete PremathContext example
+
+IDENT0's role simplex `[issuer, subject, credential, scope, epoch]`
+is the canonical worked example of how a PremathContext's identity
+coordinates decompose.
+
+Under this profile:
+
+- `issuer` is the admission-time authority asserting a credential
+  (§4.2.5 `mode_controller_id`, `audit_sink_id`, or the Cloudflare
+  Access team handle for workingdoge-class consumers).
+- `subject` is the principal the credential binds (§4.2.1
+  `subject_id`, `consumer_id`).
+- `credential` is the typed credential artifact itself (§4.2.1
+  `witness_jti` for JWT backends, or the non-exportable handle for
+  key backends).
+- `scope` is the admissible operation surface (§4.2.4
+  `requested_tool`, `requested_resource`, `requested_method`).
+- `epoch` is the freshness / rotation boundary (§4.2.2
+  `secret_epoch`, §4.2.5 `issuer_epoch`, `mode_epoch`).
+
+A bridge implementation that consumes the premath identity profile
+SHALL expose a forgetful map from its context to the identity
+simplex and preserve the IDENT0 witnesses (trust, binding, grants,
+freshness, not-revoked) along that map.
+
 ## 3. Ambient coherence level
 
 This profile chooses `V = Gpd`.
