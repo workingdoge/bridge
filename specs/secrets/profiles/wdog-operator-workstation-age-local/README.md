@@ -11,7 +11,10 @@ See `PROFILE.md` for the SECRET-0002 conformance shape:
   no persistence past subprocess exit)
 - BackendBinding schema = per-secret ciphertext_path + envvar_name +
   recipients (workstation identity, NOT host)
-- MaterializationSession schema = subprocess lifetime = session lifetime
+- MaterializationSession schema = subprocess lifetime = session lifetime;
+  each session implicitly presents an IDENT0 identity simplex
+  `[issuer, subject, credential, scope, epoch]` (see §5.1) whose
+  witnesses are checked statically at commit time.
 
 ## How this relates to wdog-v0-age-local
 

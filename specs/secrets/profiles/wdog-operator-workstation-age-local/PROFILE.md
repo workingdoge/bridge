@@ -195,6 +195,75 @@ session and obligates rotation. The profile cannot recover an exposed
 token; it can only bound the exposure to future subprocesses and rotate
 the ciphertext.
 
+### 5.1 Identity presentation under IDENT0
+
+Each MaterializationSession implicitly presents an IDENT0 identity
+simplex `[issuer, subject, credential, scope, epoch]`
+(fish/sites/premath/specs/raw/ident/IDENT0.md). v0's "implicit
+operator consent" is not a weakening of admission — it is a typed
+identity presentation whose witnesses are verifiable statically at
+commit time, before any live bridge runtime exists.
+
+The five roles bind concretely as:
+
+| IDENT0 role   | Role in this profile                                          |
+|---------------|---------------------------------------------------------------|
+| `issuer`      | The operator workstation's age public key listed as a         |
+|               | recipient on the committed ciphertext. `IEnv.IssuerP` =       |
+|               | age pubkey string; `IEnv.IssuerTrusted` holds iff the key     |
+|               | is explicitly declared in `.sops.yaml`'s                      |
+|               | `&operator_workstation_v0` anchor by the consuming repo.      |
+| `subject`     | The named operator principal (`git config user.email` of      |
+|               | the committing author in the consuming repo).                 |
+|               | `IEnv.SubjectP` = email identity;                             |
+|               | `IEnv.SubjectValid` holds iff the committer is in the         |
+|               | consuming repo's declared operator roster.                    |
+| `credential`  | The sops-encrypted ciphertext of the BackendBinding,          |
+|               | unwrapped via age at materialization time.                    |
+|               | `IEnv.CredentialP` = the committed ciphertext blob;           |
+|               | `IEnv.CredentialValid` holds iff sops decryption succeeds     |
+|               | for the workstation age recipient;                            |
+|               | `IEnv.NotRevoked` holds iff no burn event has been            |
+|               | declared (see §5 Burn semantics).                             |
+| `scope`       | The BackendBinding's `name` + `authorityClass` pair.          |
+|               | `IEnv.ScopeP` = the pair;                                     |
+|               | `IEnv.ScopeValid` holds iff the authorityClass matches        |
+|               | a class declared in the consuming repo's operational          |
+|               | spine §2.6 taxonomy.                                          |
+| `epoch`       | The binding's `rotation` policy field. `IEnv.EpochP` =        |
+|               | the policy slug (v0: "rotate-per-apply");                     |
+|               | `IEnv.EpochValid` holds iff rotation is current (no stale     |
+|               | binding from before the last declared burn).                  |
+
+IDENT0's cross-role witnesses map onto committed-BackendBinding
+evidence that a conforming implementation SHALL check at commit time:
+
+- `SignedBy credential issuer` holds iff the ciphertext's age
+  recipient list includes the issuer's pubkey.
+- `Names credential subject` holds iff the commit author matches the
+  subject role (sops-audit-trail style; v0 is single-operator so
+  this is trivially satisfied by `git config user.email`).
+- `Grants credential scope` holds iff the BackendBinding record's
+  `authorityClass` field matches the scope role (the scope is
+  literally declared in the binding).
+- `FreshAt credential epoch` holds iff the binding's rotation
+  policy is honored — in v0 "rotate-per-apply" means the binding
+  MUST NOT be reused across subprocess invocations without a fresh
+  upstream token mint.
+
+Cross-reference: `BRIDGE-PREMATH-0001.premath-gluing-profile.md` §2.2
+maps IDENT0's identity simplex onto the bridge-wide PremathContext
+coordinate groups (§4.2.1 Request, §4.2.4 Policy, §4.2.5
+Provider-fact). A conforming bridge consumer of this profile SHALL
+expose a forgetful map from its session record to the IDENT0 simplex
+and preserve the witnesses above along that map.
+
+v0 admission remains implicit: by committing a BackendBinding, the
+operator simultaneously asserts all five role values and all witness
+discharges above. A live bridge runtime, when it ships, will reify
+these implicit witnesses into explicit audit records attached to the
+MaterializationSession.
+
 ## 6. Admissibility under SECRET-0002
 
 This profile satisfies the SECRET-0002 conformance sentence
