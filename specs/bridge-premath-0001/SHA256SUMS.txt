@@ -1,4 +1,4 @@
-8cd3aaf44a790e12663cdcceaa29bd66bb621d09e745ab556194bb4bd3e051c7  ./BRIDGE-PREMATH-0001.premath-gluing-profile.md
+b6694791e628a334e24ef8b8243d287f92b1611563f1d13effdf9f43ac053fd2  ./BRIDGE-PREMATH-0001.premath-gluing-profile.md
 4b073728df6101aa0d341c15d3c3b8ff7481f8fb570c74e5af4091b0042544d2  ./README.md
 597342372ef8e199e6b4e7c881158197b3856ab1869711571be22038259196c4  ./bridge-kb-proof-boundary.md
 b7aa2280ce0859d0788239d261cc591c0664fcc9cced0e54424623ee67e5a833  ./examples/example.context-morphism.reduce-ttl.json
