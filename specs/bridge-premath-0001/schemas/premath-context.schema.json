@@ -89,6 +89,42 @@
         "consumer_id"
       ]
     },
+    "interpretation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "foreign_observation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_context_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interpretation_binding_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "typed_observation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "interpretation_status": {
+          "type": "string",
+          "enum": [
+            "admitted",
+            "unknown",
+            "ambiguous",
+            "stale"
+          ]
+        }
+      },
+      "required": [
+        "foreign_observation_id",
+        "source_context_id",
+        "interpretation_status"
+      ]
+    },
     "secret": {
       "type": "object",
       "additionalProperties": false,
@@ -402,6 +438,7 @@
     "context_id",
     "coherence_level",
     "request",
+    "interpretation",
     "secret",
     "resource_secret_binding",
     "policy",

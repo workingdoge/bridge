@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/bridge/v0.2/adapter/interpreted-observation.schema.json",
+  "title": "Bridge Interpreted Observation",
+  "description": "Typed bridge-local observation emitted after an admissible interpretation binding has been selected.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "observation_id",
+    "observation_type",
+    "canonical_domain",
+    "canonical_tool",
+    "canonical_resource"
+  ],
+  "properties": {
+    "observation_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "observation_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "canonical_domain": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,255}$"
+    },
+    "canonical_tool": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "canonical_resource": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    }
+  }
+}

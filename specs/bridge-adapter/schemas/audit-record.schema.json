@@ -17,6 +17,7 @@
     "domain",
     "tool",
     "resource",
+    "interpretation",
     "current_mode",
     "witness_sha256",
     "policy_input_sha256"
@@ -104,6 +105,130 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 512
+    },
+    "interpretation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "foreign_observation_id",
+        "status",
+        "source_context_id"
+      ],
+      "properties": {
+        "foreign_observation_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 256
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "admitted",
+            "unknown",
+            "ambiguous",
+            "stale"
+          ]
+        },
+        "source_context_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 256,
+          "pattern": "^[A-Za-z0-9._:@/-]+$"
+        },
+        "interpretation_binding_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "interpretation_profile_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "authority_basis_refs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "uniqueItems": true
+        },
+        "typed_observation_id": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128,
+          "pattern": "^[A-Za-z0-9._:-]+$"
+        },
+        "ambiguous_binding_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:-]+$"
+          },
+          "uniqueItems": true
+        },
+        "status_reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "admitted"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "interpretation_binding_id",
+              "interpretation_profile_id",
+              "authority_basis_refs",
+              "typed_observation_id"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ambiguous"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "ambiguous_binding_ids",
+              "status_reason"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "unknown",
+                  "stale"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "status_reason"
+            ]
+          }
+        }
+      ]
     },
     "current_mode": {
       "type": "string",

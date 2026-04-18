@@ -119,17 +119,29 @@ A conforming context SHALL contain at least the following coordinates.
 - `source_domain`
 - `destination_domain`
 - `subject_id`
+- `act_for` when present
 - `consumer_kind`
 - `consumer_id`
 
-#### 4.2.2 Secret coordinates
+#### 4.2.2 Interpretation coordinates
+
+Bridge interpretation remains bridge-owned, but the realized Premath context
+SHALL carry stable references for the admitted meaning assignment:
+
+- `foreign_observation_id`
+- `source_context_id`
+- `interpretation_binding_id`
+- `typed_observation_id`
+- `interpretation_status`
+
+#### 4.2.3 Secret coordinates
 
 - `secret_id`
 - `secret_class`
 - `version_selector` or `version_id`
 - `secret_epoch` when available
 
-#### 4.2.3 Resource-to-secret seam
+#### 4.2.4 Resource-to-secret seam
 
 The current suite already contains the ingredients of this seam, but the seam is
 not explicit everywhere. This profile therefore REQUIRES a normalized seam
@@ -142,7 +154,7 @@ object containing at least:
 - `materializer_profile_id`
 - `issuance_mode`
 
-#### 4.2.4 Policy coordinates
+#### 4.2.5 Policy coordinates
 
 - `requested_method`
 - `requested_ttl_s`
@@ -152,7 +164,7 @@ object containing at least:
 - `non_exportable`
 - `direct_model_access_prohibited`
 
-#### 4.2.5 Provider-fact coordinates
+#### 4.2.6 Provider-fact coordinates
 
 - `deployment_profile_id`
 - `provider_catalog_id`
@@ -165,7 +177,7 @@ object containing at least:
 - `mode_epoch`
 - `audit_sink_id`
 
-#### 4.2.6 Audit coordinates
+#### 4.2.7 Audit coordinates
 
 - `stream_id`
 - `last_sequence`
@@ -325,6 +337,8 @@ It SHALL contain at least:
 - `source_domain`
 - `destination_domain`
 - `subject_id`
+- `act_for`
+- `consumer_kind`
 - `consumer_id`
 
 ### 7.2 `K_secret`

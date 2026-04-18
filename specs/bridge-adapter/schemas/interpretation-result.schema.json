@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/bridge/v0.2/adapter/interpretation-result.schema.json",
+  "title": "Bridge Interpretation Result",
+  "description": "Carried interpretation result used by the adapter and audit surface.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "foreign_observation_id",
+    "status",
+    "source_context"
+  ],
+  "properties": {
+    "foreign_observation_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 256
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "admitted",
+        "unknown",
+        "ambiguous",
+        "stale"
+      ]
+    },
+    "source_context": {
+      "$ref": "https://example.org/bridge/v0.2/adapter/source-context.schema.json"
+    },
+    "interpretation_binding": {
+      "$ref": "https://example.org/bridge/v0.2/adapter/interpretation-binding.schema.json"
+    },
+    "typed_observation": {
+      "$ref": "https://example.org/bridge/v0.2/adapter/interpreted-observation.schema.json"
+    },
+    "ambiguous_binding_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 128,
+        "pattern": "^[A-Za-z0-9._:-]+$"
+      },
+      "uniqueItems": true
+    },
+    "status_reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "admitted"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "interpretation_binding",
+          "typed_observation"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "ambiguous"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "ambiguous_binding_ids",
+          "status_reason"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "enum": [
+              "unknown",
+              "stale"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "status_reason"
+        ]
+      }
+    }
+  ]
+}

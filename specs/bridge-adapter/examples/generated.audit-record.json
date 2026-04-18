@@ -7,15 +7,26 @@
   "jti": "464e6650-b1b0-41f9-89da-47b9b43e8c2b",
   "effect": "error",
   "subject": "spiffe://acme/agents/reporting-worker",
-  "act_for": "user:alice@example.com",
   "domain": "acme.prod.analytics",
   "source_domain": "acme.prod.analytics",
   "destination_domain": "acme.prod.analytics",
   "tool": "db.query.readonly",
   "resource": "postgres://analytics/reporting",
+  "interpretation": {
+    "foreign_observation_id": "obs.analytics.reporting-db.20260411.001",
+    "status": "admitted",
+    "source_context_id": "srcctx.analytics.reporting-db.pg-v12.rowset-v1",
+    "interpretation_binding_id": "interp.reporting-db.pg-v12.rowset-v1",
+    "interpretation_profile_id": "bridge.interpretation.pg.rowset-v1",
+    "authority_basis_refs": [
+      "catalog:pg-query-request-v1",
+      "schema:pg-query-request@v1"
+    ],
+    "typed_observation_id": "typedobs.analytics.reporting-db.query-v1"
+  },
   "current_mode": "normal",
   "witness_sha256": "c0b1d797c172bc978a4765720303d5d5d58ddbed4fed16aeb206f16893797aa5",
-  "policy_input_sha256": "c6adf326bb0ee583184228f0e42b586412222bec4d33a068a38667ea8e8def14",
+  "policy_input_sha256": "dd8fa817a747ccc7f5c9759af7c95c76ce7cfb9bcce42bdc831ca22f8b028202",
   "deny_reasons": [],
   "burn_reasons": [],
   "labels": {
@@ -36,5 +47,6 @@
         "measured-boot"
       ]
     }
-  }
+  },
+  "act_for": "user:alice@example.com"
 }

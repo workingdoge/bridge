@@ -10,7 +10,7 @@
     "posture_match": true,
     "subject_allowed": true,
     "delegated_actor_allowed": true,
-    "interpretation_admissible": true,
+    "interpretation_admissible": false,
     "materialize_only_at_execution_leaf": true,
     "evidence_emit_ok": true,
     "release_basis_allowed": true,
@@ -18,15 +18,15 @@
   },
   "interpretation": {
     "foreign_observation_id": "obs.analytics.reporting-db.20260411.001",
-    "status": "admitted",
+    "status": "stale",
     "source_context": {
-      "context_id": "srcctx.analytics.reporting-db.pg-v12.rowset-v1",
+      "context_id": "srcctx.analytics.reporting-db.pg-v13.rowset-v1",
       "source_profile_id": "pg-query-request-v1",
       "source_domain": "acme.prod.analytics",
       "source_object_id": "postgres://analytics/reporting",
       "schema_identity": "pg-query-request@v1",
       "payload_facet": "sql-readonly",
-      "validity_coordinate": "pg-v12"
+      "validity_coordinate": "pg-v13"
     },
     "interpretation_binding": {
       "binding_id": "interp.reporting-db.pg-v12.rowset-v1",
@@ -36,21 +36,15 @@
         "schema:pg-query-request@v1"
       ],
       "valid_from": "2026-04-11T13:55:00Z",
-      "valid_until": "2026-04-11T14:05:00Z"
+      "valid_until": "2026-04-11T13:59:00Z"
     },
-    "typed_observation": {
-      "observation_id": "typedobs.analytics.reporting-db.query-v1",
-      "observation_type": "sql-read-request",
-      "canonical_domain": "acme.prod.analytics",
-      "canonical_tool": "db.query.readonly",
-      "canonical_resource": "postgres://analytics/reporting"
-    }
+    "status_reason": "the selected interpretation binding is outside its validity window for the resolved source context"
   },
   "runtime": {
     "authoritative_now": "2026-04-11T14:00:30Z",
     "verifier_id": "tusk-broker://us-east-1/bridge",
     "time_source_ok": true,
-    "current_mode": "safe",
+    "current_mode": "normal",
     "attestation_snapshot": {
       "digest": "99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa",
       "issued_at": "2026-04-11T13:59:40Z"
@@ -94,7 +88,7 @@
   "events": {
     "bridge_host_attestation_failed": false,
     "issuer_compromise_detected": false,
-    "audit_tamper_detected": true,
+    "audit_tamper_detected": false,
     "canary_or_honey_credential_activated": false,
     "controlled_release_policy_bypass_detected": false,
     "policy_hash_mismatch": false
