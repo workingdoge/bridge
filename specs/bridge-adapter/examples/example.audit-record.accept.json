@@ -13,6 +13,18 @@
   "destination_domain": "acme.prod.analytics",
   "tool": "db.query.readonly",
   "resource": "postgres://analytics/reporting",
+  "interpretation": {
+    "foreign_observation_id": "obs.analytics.reporting-db.20260411.001",
+    "status": "admitted",
+    "source_context_id": "srcctx.analytics.reporting-db.pg-v12.rowset-v1",
+    "interpretation_binding_id": "interp.reporting-db.pg-v12.rowset-v1",
+    "interpretation_profile_id": "bridge.interpretation.pg.rowset-v1",
+    "authority_basis_refs": [
+      "catalog:pg-query-request-v1",
+      "schema:pg-query-request@v1"
+    ],
+    "typed_observation_id": "typedobs.analytics.reporting-db.query-v1"
+  },
   "current_mode": "normal",
   "witness_sha256": "c0b1d797c172bc978a4765720303d5d5d58ddbed4fed16aeb206f16893797aa5",
   "policy_input_sha256": "c6adf326bb0ee583184228f0e42b586412222bec4d33a068a38667ea8e8def14",

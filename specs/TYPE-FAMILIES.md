@@ -45,7 +45,28 @@ Primary surface:
 - `specs/secrets/secret-0003/schemas/*.schema.json`
 - `specs/secrets/secret-0003/SECRET-0003.provider-integration-attestation-audit-deployment.md`
 
-### 3. Admission
+### 3. Interpretation
+
+Bridge-owned meaning assignment over foreign observations once the relevant
+source context and authoritative facts are known.
+
+Primary types:
+
+- source context
+- interpretation binding
+- typed bridge-local observation
+- unknown or ambiguous interpretation state
+- interpretation validity window
+
+Primary surface:
+
+- `specs/bridge-adapter/interpretation-binding.md`
+- `specs/bridge-adapter/schemas/source-context.schema.json`
+- `specs/bridge-adapter/schemas/interpretation-binding.schema.json`
+- `specs/bridge-adapter/schemas/interpreted-observation.schema.json`
+- `specs/bridge-adapter/schemas/interpretation-result.schema.json`
+
+### 4. Admission
 
 Bridge-owned assembly and decision types.
 
@@ -63,7 +84,7 @@ Primary surface:
 - `specs/bridge-adapter/schemas/decision.schema.json`
 - `specs/bridge-adapter/adapter-contract.md`
 
-### 4. Secret Core
+### 5. Secret Core
 
 What the secret is across lifecycle and epoch boundaries.
 
@@ -81,7 +102,7 @@ Primary surface:
 - `specs/secrets/secret-0001/SECRET-0001.secret-object-and-lifecycle-core.md`
 - `specs/secrets/secret-0001/schemas/*.schema.json`
 
-### 5. Realization
+### 6. Realization
 
 The bounded handoff from an admitted action into a concrete secret-use session.
 
@@ -102,7 +123,7 @@ Primary surface:
 - `specs/secrets/secret-0002/SECRET-0002.backend-and-materialization-profile.md`
 - `specs/secrets/secret-0002/schemas/*.schema.json`
 
-### 6. Audit
+### 7. Audit
 
 Durable evidence and receipt material across bridge and secret flows.
 
@@ -124,6 +145,7 @@ Primary surface:
 Organize reusable interfaces around these type families:
 
 - fact providers serve `Authority`
+- bridge resolves admissible meaning through `Interpretation`
 - bridge adapters assemble `Admission`
 - planners and materializers realize `Realization`
 - products such as Vault, KMS, HSM, `agenix`, or local files implement lower
@@ -131,7 +153,7 @@ Organize reusable interfaces around these type families:
 
 ## Current repo split
 
-- `bridge-adapter/` centers `Ingress`, `Authority`, and `Admission`
+- `bridge-adapter/` centers `Ingress`, `Authority`, `Interpretation`, and `Admission`
 - `secrets/secret-0001/` centers `Secret Core`
 - `secrets/secret-0002/` centers `Realization`
 - `secrets/secret-0003/` centers `Authority` and `Audit`

@@ -13,6 +13,7 @@ Runs the repo-owned semantic property checks for the bridge-to-secret planner:
 - zero secret-materialization budget denies
 - issued TTL never exceeds the effective bound
 - non-exportable authority does not widen into forbidden plaintext-capable surfaces
+- non-admitted interpretation states never assemble into policy input
 EOF
 }
 
@@ -42,6 +43,8 @@ fi
 
 property_script="$repo_root/specs/secrets/secret-0002/python/reference_planner_properties.py"
 [[ -f "$property_script" ]] || { echo "missing property script: $property_script" >&2; exit 1; }
+adapter_property_script="$repo_root/specs/bridge-adapter/python/reference_adapter_properties.py"
+[[ -f "$adapter_property_script" ]] || { echo "missing property script: $adapter_property_script" >&2; exit 1; }
 
 run_property_python() {
   local script_path="$1"
@@ -55,3 +58,4 @@ run_property_python() {
 }
 
 run_property_python "$property_script"
+run_property_python "$adapter_property_script"

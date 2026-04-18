@@ -1,6 +1,8 @@
 # Bridge Adapter Contract v0.2
 
-This bundle wires the **external caller contract** to the existing `input.preflight`, `input.events`, `input.runtime_request`, and `input.witness` policy contract.
+This bundle wires the **external caller contract** to the existing
+`input.preflight`, `input.events`, `input.runtime_request`,
+`input.interpretation`, and `input.witness` policy contract.
 
 ## What the adapter is allowed to trust
 
@@ -34,7 +36,9 @@ The caller sends an `AuthorizeRequest` with:
 
 ## Internal provider contract
 
-Before evaluation, the adapter resolves `ProviderResults` from local or remote authoritative providers. The provider results are then assembled into the policy-engine input.
+Before evaluation, the adapter resolves `ProviderResults` from local or remote
+authoritative providers. The provider results are then assembled into the
+policy-engine input.
 
 The adapter **SHALL** fail closed when any required provider is unavailable or returns unverifiable data.
 
@@ -48,11 +52,16 @@ The adapter **SHALL** fail closed when any required provider is unavailable or r
 6. Resolve current mode from the burn/mode controller.
 7. Resolve authoritative time.
 8. Resolve attestation and compare it to `witness.posture_digest`.
-9. Resolve canonical resource policy for `requested_tool + requested_resource`.
-10. Check subject/delegation authorization.
-11. Check evidence sink readiness.
-12. Assemble the policy input.
-13. Emit a durable audit record for the request and the final decision.
+9. Resolve source context, interpretation binding, and typed observation for
+   the foreign observation when the input is not self-describing.
+10. Canonicalize admitted tool, resource, and source-domain identity from the
+    interpreted observation when present.
+11. Resolve canonical resource policy for the canonicalized
+    `requested_tool + requested_resource`.
+12. Check subject/delegation authorization.
+13. Check evidence sink readiness.
+14. Assemble the policy input.
+15. Emit a durable audit record for the request and the final decision.
 
 ## Fail-closed requirements
 
@@ -64,6 +73,7 @@ The adapter **MUST DENY** when:
 - revocation status is unavailable or negative,
 - authoritative time is unavailable,
 - attestation freshness or match checks fail,
+- interpretation is unavailable, `unknown`, `ambiguous`, or `stale`,
 - resource policy lookup fails,
 - audit sink is unavailable and no durable emergency queue exists.
 
@@ -109,6 +119,8 @@ The adapter **SHALL** canonicalize:
 
 - resource identifiers,
 - domain identifiers,
+- admitted tool/resource/domain identity from interpreted observations when
+  interpretation is carried,
 - content hashes,
 - witness serialization before signature verification and witness hashing.
 
@@ -117,6 +129,10 @@ This prevents scope confusion, replay aliasing, and audit hash instability.
 ## Files in this bundle
 
 - `schemas/authorize.request.schema.json`
+- `schemas/source-context.schema.json`
+- `schemas/interpretation-binding.schema.json`
+- `schemas/interpreted-observation.schema.json`
+- `schemas/interpretation-result.schema.json`
 - `schemas/provider-results.schema.json`
 - `schemas/policy-input.schema.json`
 - `schemas/decision.schema.json`

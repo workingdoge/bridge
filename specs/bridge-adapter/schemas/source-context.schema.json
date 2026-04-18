@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/bridge/v0.2/adapter/source-context.schema.json",
+  "title": "Bridge Source Context",
+  "description": "Canonical source-context carrier used to select an admissible interpretation for a foreign observation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context_id",
+    "source_profile_id",
+    "source_domain",
+    "source_object_id",
+    "schema_identity",
+    "payload_facet",
+    "validity_coordinate"
+  ],
+  "properties": {
+    "context_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9._:@/-]+$"
+    },
+    "source_profile_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "source_domain": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 256,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,255}$"
+    },
+    "source_object_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512
+    },
+    "schema_identity": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "payload_facet": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "validity_coordinate": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    }
+  }
+}

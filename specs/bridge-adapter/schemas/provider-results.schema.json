@@ -8,6 +8,7 @@
   "required": [
     "version",
     "preflight",
+    "interpretation",
     "runtime",
     "events"
   ],
@@ -28,6 +29,7 @@
         "posture_match",
         "subject_allowed",
         "delegated_actor_allowed",
+        "interpretation_admissible",
         "materialize_only_at_execution_leaf",
         "evidence_emit_ok",
         "release_basis_allowed",
@@ -61,6 +63,9 @@
         "delegated_actor_allowed": {
           "type": "boolean"
         },
+        "interpretation_admissible": {
+          "type": "boolean"
+        },
         "materialize_only_at_execution_leaf": {
           "type": "boolean"
         },
@@ -74,6 +79,9 @@
           "type": "boolean"
         }
       }
+    },
+    "interpretation": {
+      "$ref": "https://example.org/bridge/v0.2/adapter/interpretation-result.schema.json"
     },
     "runtime": {
       "type": "object",

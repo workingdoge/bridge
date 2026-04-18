@@ -8,10 +8,12 @@ This bundle adds the missing adapter layer between:
 
 ## Main idea
 
-The adapter does three jobs:
+The adapter does four jobs:
 
 - takes an external `AuthorizeRequest`,
 - resolves authoritative provider facts,
+- resolves admissible interpretation binding over foreign observations when the
+  input is not self-describing,
 - assembles `PolicyInput` for the policy engine.
 
 The caller never supplies `preflight` booleans directly.
@@ -19,6 +21,14 @@ The caller never supplies `preflight` booleans directly.
 ## Files
 
 - `adapter-contract.md` — normative contract and assembly rules
+- `interpretation-binding.md` — meaning-assignment family between authority and
+  admission
+- `schemas/source-context.schema.json` — canonical source-context carrier
+- `schemas/interpretation-binding.schema.json` — selected interpretation
+  binding carrier
+- `schemas/interpreted-observation.schema.json` — typed bridge-local
+  observation carrier
+- `schemas/interpretation-result.schema.json` — carried interpretation result
 - `provider-mapping.yaml` — which provider populates which field
 - `schemas/authorize.request.schema.json` — external request
 - `schemas/provider-results.schema.json` — authoritative provider facts
@@ -41,8 +51,16 @@ python reference_adapter.py \
   --audit-out ../examples/out.audit-record.json
 ```
 
-The script validates the request and provider result schemas, assembles the internal policy input, validates the policy input shape, and emits an audit stub.
+The script validates the request and provider result schemas, assembles the
+internal policy input, validates the policy input shape, and emits an audit
+stub.
+
+It fails closed when the resolved interpretation is `unknown`, `ambiguous`, or
+`stale`, so those states never reach the assembled policy-input surface.
 
 ## Important rule
 
-The adapter MUST treat all caller input except the witness and call facts as untrusted. It is the adapter's job to turn authoritative results into `input.preflight`, `input.events`, and the authoritative parts of `input.runtime_request`.
+The adapter MUST treat all caller input except the witness and call facts as
+untrusted. It is the adapter's job to turn authoritative results into
+`input.preflight`, `input.events`, `input.interpretation`, and the
+authoritative parts of `input.runtime_request`.

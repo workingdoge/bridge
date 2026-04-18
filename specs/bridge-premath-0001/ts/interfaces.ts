@@ -20,6 +20,13 @@ export interface PremathContext {
     consumer_kind: string;
     consumer_id: string;
   };
+  interpretation: {
+    foreign_observation_id: string;
+    source_context_id: string;
+    interpretation_binding_id?: string;
+    typed_observation_id?: string;
+    interpretation_status: "admitted" | "unknown" | "ambiguous" | "stale";
+  };
   secret: {
     secret_id: string;
     secret_class: string;
@@ -123,6 +130,8 @@ export interface RequestOverlap {
   source_domain: string;
   destination_domain: string;
   subject_id: string;
+  act_for: string;
+  consumer_kind: string;
   consumer_id: string;
 }
 

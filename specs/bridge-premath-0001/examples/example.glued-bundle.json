@@ -12,6 +12,8 @@
       "source_domain": "acme.prod.analytics",
       "destination_domain": "acme.prod.analytics",
       "subject_id": "spiffe://acme/agents/reporting-worker",
+      "act_for": "user:alice@example.com",
+      "consumer_kind": "systemd-unit",
       "consumer_id": "analytics-reporter.service"
     },
     "secret": {

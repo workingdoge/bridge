@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/bridge/v0.2/adapter/interpretation-binding.schema.json",
+  "title": "Bridge Interpretation Binding",
+  "description": "Selected admissible interpretation binding for a foreign observation under a resolved source context.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "binding_id",
+    "interpretation_profile_id",
+    "authority_basis_refs",
+    "valid_from",
+    "valid_until"
+  ],
+  "properties": {
+    "binding_id": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "interpretation_profile_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9._:-]+$"
+    },
+    "authority_basis_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

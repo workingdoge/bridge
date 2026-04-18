@@ -64,14 +64,33 @@ def compute_cross_domain(call: Dict[str, Any]) -> bool:
     return call.get("destination_domain", call["source_domain"]) != call["source_domain"]
 
 
+def ensure_admitted_interpretation(provider_results: Dict[str, Any]) -> Dict[str, Any]:
+    interpretation = provider_results["interpretation"]
+    if not provider_results["preflight"]["interpretation_admissible"]:
+        raise ValueError(f"interpretation is not admissible: {interpretation['status']}")
+    if interpretation["status"] != "admitted":
+        raise ValueError(
+            f"interpretation must be admitted before assembly: {interpretation['status']}"
+        )
+    return interpretation
+
+
 def assemble(authorize_request: Dict[str, Any], provider_results: Dict[str, Any]) -> Dict[str, Any]:
     call = authorize_request["call"]
     runtime = provider_results["runtime"]
+    interpretation = ensure_admitted_interpretation(provider_results)
+    typed_observation = interpretation["typed_observation"]
+    canonical_source_domain = typed_observation.get("canonical_domain", call["source_domain"])
+    canonical_requested_tool = typed_observation.get("canonical_tool", call["requested_tool"])
+    canonical_requested_resource = typed_observation.get(
+        "canonical_resource", call["requested_resource"]
+    )
     destination_domain = call.get("destination_domain", call["source_domain"])
     return {
         "witness": authorize_request["witness"],
         "preflight": provider_results["preflight"],
         "events": provider_results["events"],
+        "interpretation": interpretation,
         "runtime_request": {
             "attestation_snapshot": runtime["attestation_snapshot"],
             "cross_domain": compute_cross_domain(call),
@@ -80,13 +99,13 @@ def assemble(authorize_request: Dict[str, Any], provider_results: Dict[str, Any]
             "now": runtime["authoritative_now"],
             "payload_hash": call.get("payload_hash", ""),
             "pop_proof": call["pop_proof"],
-            "requested_resource": call["requested_resource"],
-            "requested_tool": call["requested_tool"],
+            "requested_resource": canonical_requested_resource,
+            "requested_tool": canonical_requested_tool,
             "resource_policy": runtime["resource_policy"],
             "revocation_snapshot": runtime["revocation_snapshot"],
             "rp_initiated": call["rp_initiated"],
             "session_nonce": call["session_nonce"],
-            "source_domain": call["source_domain"],
+            "source_domain": canonical_source_domain,
             "time_source_ok": runtime["time_source_ok"],
             "verifier_id": runtime["verifier_id"],
         },
@@ -95,22 +114,34 @@ def assemble(authorize_request: Dict[str, Any], provider_results: Dict[str, Any]
 
 def audit_stub(policy_input: Dict[str, Any], authoritative_time_source: str) -> Dict[str, Any]:
     witness = policy_input["witness"]
-    return {
+    runtime_request = policy_input["runtime_request"]
+    interpretation = policy_input["interpretation"]
+    binding = interpretation.get("interpretation_binding", {})
+    typed_observation = interpretation.get("typed_observation", {})
+    audit = {
         "version": "0.2",
         "record_type": "authorize",
-        "event_time": policy_input["runtime_request"]["now"],
+        "event_time": runtime_request["now"],
         "authoritative_time_source": authoritative_time_source,
         "trace": witness["trace"],
         "jti": witness["jti"],
         "effect": "error",
         "subject": witness["sub"],
-        "act_for": witness.get("act_for", ""),
-        "domain": witness["domain"],
-        "source_domain": policy_input["runtime_request"]["source_domain"],
-        "destination_domain": policy_input["runtime_request"]["destination_domain"],
-        "tool": witness["tool"],
-        "resource": witness["resource"],
-        "current_mode": policy_input["runtime_request"]["current_mode"],
+        "domain": runtime_request["source_domain"],
+        "source_domain": runtime_request["source_domain"],
+        "destination_domain": runtime_request["destination_domain"],
+        "tool": runtime_request["requested_tool"],
+        "resource": runtime_request["requested_resource"],
+        "interpretation": {
+            "foreign_observation_id": interpretation["foreign_observation_id"],
+            "status": interpretation["status"],
+            "source_context_id": interpretation["source_context"]["context_id"],
+            "interpretation_binding_id": binding.get("binding_id", ""),
+            "interpretation_profile_id": binding.get("interpretation_profile_id", ""),
+            "authority_basis_refs": binding.get("authority_basis_refs", []),
+            "typed_observation_id": typed_observation.get("observation_id", ""),
+        },
+        "current_mode": runtime_request["current_mode"],
         "witness_sha256": sha256_hex(witness),
         "policy_input_sha256": sha256_hex(policy_input),
         "deny_reasons": [],
@@ -120,6 +151,9 @@ def audit_stub(policy_input: Dict[str, Any], authoritative_time_source: str) -> 
             "integ_label": witness["integ_label"],
         },
     }
+    if "act_for" in witness:
+        audit["act_for"] = witness["act_for"]
+    return audit
 
 
 def main() -> None:

@@ -37,6 +37,13 @@
       "type": "string",
       "minLength": 1
     },
+    "act_for": {
+      "type": "string"
+    },
+    "consumer_kind": {
+      "type": "string",
+      "minLength": 1
+    },
     "consumer_id": {
       "type": "string",
       "minLength": 1
@@ -51,6 +58,8 @@
     "source_domain",
     "destination_domain",
     "subject_id",
+    "act_for",
+    "consumer_kind",
     "consumer_id"
   ]
 }

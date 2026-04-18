@@ -28,6 +28,20 @@ providers:
         pair.
       preflight.delegated_actor_allowed: act_for delegation is permitted for the resolved
         subject.
+  interpretation_resolver:
+    outputs:
+      preflight.interpretation_admissible: Selected interpretation is admitted
+        and current for the resolved source context.
+      interpretation.foreign_observation_id: Canonical identity of the foreign
+        observation being interpreted.
+      interpretation.source_context: Bridge-owned source context required for
+        meaning assignment.
+      interpretation.interpretation_binding: Selected admissible interpretation
+        binding when one exists.
+      interpretation.typed_observation: Typed bridge-local observation used for
+        admission assembly.
+      interpretation.ambiguous_binding_ids: Competing binding ids when
+        interpretation is ambiguous.
   attestation_verifier:
     outputs:
       preflight.posture_match: Runtime posture and witness posture digest are compatible.
@@ -68,9 +82,12 @@ assembly_rules:
   the mode controller.
 - Caller-supplied resource policy SHALL be ignored. runtime_request.resource_policy
   comes only from the resource registry.
+- Interpretation SHALL be carried explicitly. input.interpretation comes only
+  from interpretation_resolver outputs.
 - cross_domain SHALL be computed as call.cross_domain when explicitly present, otherwise
   source_domain != destination_domain.
 - destination_domain defaults to source_domain when omitted.
 - payload_hash defaults to empty string when omitted.
-- Verifier MUST canonicalize requested_resource before policy lookup and before scope
-  comparison.
+- Verifier MUST canonicalize requested_tool, requested_resource, and
+  source_domain from the admitted interpreted observation before policy lookup,
+  scope comparison, and audit emission.

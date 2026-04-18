@@ -16,6 +16,13 @@
     "consumer_kind": "systemd-unit",
     "consumer_id": "analytics-reporter.service"
   },
+  "interpretation": {
+    "foreign_observation_id": "obs.analytics.reporting-db.20260413.001",
+    "source_context_id": "srcctx.analytics.reporting-db.pg-v12.rowset-v1",
+    "interpretation_binding_id": "interp.reporting-db.pg-v12.rowset-v1",
+    "typed_observation_id": "typedobs.analytics.reporting-db.query-v1",
+    "interpretation_status": "admitted"
+  },
   "secret": {
     "secret_id": "secret.analytics.reporting-db",
     "secret_class": "database-credential",
