@@ -92,7 +92,6 @@ Primary types:
 - `BackendBinding`
 - `MaterializationPlanRequest`
 - `MaterializationSession`
-- `SessionOpenArtifact`
 - `SignatureRequest`
 - `SignatureResponse`
 - session handle kind
