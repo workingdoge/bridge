@@ -20,7 +20,7 @@ input.
 
 ### Spec surface
 
-The `specs/` tree is the active normalized surface. 37 JSON schemas are
+The `specs/` tree is the active normalized surface. 42 JSON schemas are
 organized across 7 stable type families (Ingress, Authority, Interpretation,
 Admission, Secret Core, Realization, Audit). See
 [`specs/TYPE-FAMILIES.md`](specs/TYPE-FAMILIES.md) for the canonical map.
@@ -29,7 +29,7 @@ Admission, Secret Core, Realization, Audit). See
 |-----------|--------|-------------|
 | `bridge-adapter/` | Adapter contract: ingress, authority, interpretation, admission | [`specs/bridge-adapter/README.md`](specs/bridge-adapter/README.md) |
 | `secrets/secret-0001/` | Secret object and lifecycle core | [`specs/secrets/secret-0001/`](specs/secrets/secret-0001/) |
-| `secrets/secret-0002/` | Backend and materialization profile, signer-session edge | [`specs/secrets/secret-0002/`](specs/secrets/secret-0002/) |
+| `secrets/secret-0002/` | Backend and materialization profile, signer-session and witness-realization edge | [`specs/secrets/secret-0002/`](specs/secrets/secret-0002/) |
 | `secrets/secret-0003/` | Provider integration, attestation, audit, deployment | [`specs/secrets/secret-0003/`](specs/secrets/secret-0003/) |
 | `bridge-premath-0001/` | Bridge-specific Premath realization profile | [`specs/bridge-premath-0001/`](specs/bridge-premath-0001/) |
 

@@ -7,6 +7,8 @@ Surface:
 
 - `SECRET-0002.backend-and-materialization-profile.md`
 - `schemas/` backend, materializer, binding, plan-request, and session schemas
+- `WITNESS-REALIZATION-CONTRACT.md` bridge-local realization vocabulary over
+  session, signer, audit, and validation artifacts
 - `policy/profile-matrix.yaml`
 - `examples/` generated materialization-session examples
 - `python/reference_planner.py` as reference material, not runtime authority

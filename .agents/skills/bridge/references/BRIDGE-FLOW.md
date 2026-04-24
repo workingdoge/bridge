@@ -81,6 +81,16 @@ typed protocol:
 
 This is a typed session edge, not a signer DSL.
 
+The bridge-owned coherence record for that edge is
+`WitnessRealizationRecord`, defined by:
+
+- `specs/secrets/secret-0002/WITNESS-REALIZATION-CONTRACT.md`
+- `specs/secrets/secret-0002/schemas/witness-realization-record.schema.json`
+
+It links the challenge, state read, selected action, witness artifact,
+validator profile, validation result, and next session state without becoming a
+provider receipt format.
+
 ### 4) Burn and restore
 
 Bridge mode artifacts live under:

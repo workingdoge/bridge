@@ -153,6 +153,30 @@ The minimal protocol is:
 
 That is a small typed protocol, not a general-purpose signer language.
 
+## Witness realization
+
+Signer sessions also participate in the `SECRET-0002` witness-realization
+vocabulary defined in `WITNESS-REALIZATION-CONTRACT.md`.
+
+That vocabulary layers a `WitnessRealizationRecord` over the existing signer
+artifacts:
+
+- `Challenge` identifies the bridge-domain operation, such as `sign` or
+  `refuse-signature`;
+- `StateRead` references the current `MaterializationSession` and, when
+  present, the `SignatureRequest` and `SignatureResponse`;
+- `ActionSelection` records the chosen signer-session action;
+- `WitnessPlan` and `WitnessArtifact` name the artifact family carrying the
+  evidence;
+- `ValidatorProfile` names the bridge-local validation context;
+- `ValidationResult` records `accepted`, `denied`, `burned`, `stale`, or
+  `ambiguous`;
+- `StateTransition` records the next session state or receipt reference.
+
+This record is coherence metadata over the signer flow. It does not replace the
+session, request, response, or audit artifacts, and it does not introduce
+provider-specific receipt bytes into the bridge contract.
+
 ## Session invariants
 
 A conforming signer broker SHALL:

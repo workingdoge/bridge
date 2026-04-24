@@ -115,12 +115,14 @@ Primary types:
 - `MaterializationSession`
 - `SignatureRequest`
 - `SignatureResponse`
+- `WitnessRealizationRecord`
 - session handle kind
 - teardown policy
 
 Primary surface:
 
 - `specs/secrets/secret-0002/SECRET-0002.backend-and-materialization-profile.md`
+- `specs/secrets/secret-0002/WITNESS-REALIZATION-CONTRACT.md`
 - `specs/secrets/secret-0002/schemas/*.schema.json`
 
 ### 7. Audit
