@@ -15,6 +15,7 @@ nix build .#bridgeSkill  # Build the portable bridge skill bundle
 nix run .#bridge-conformance-check   # Run the exported conformance app
 nix run .#bridge-property-check      # Run the exported planner-law app
 nix run .#reference-planner -- --help  # Show the planner entrypoint
+nix run .#reference-sidecar -- --help  # Show the SECRET-0003 fixture harness
 nix flake check
 ```
 

@@ -133,9 +133,19 @@
               exec python3 "$runtime/python/reference_sidecar_server.py" --schema-dir "$runtime/schemas" "$@"
             '';
           };
+
+          referenceSidecar = pkgs.writeShellApplication {
+            name = "reference-sidecar";
+            runtimeInputs = [ pythonEnv ];
+            text = ''
+              runtime=${bridgeSidecarRuntime}/share/bridge-sidecar
+              export PYTHONPATH="$runtime/python''${PYTHONPATH:+:$PYTHONPATH}"
+              exec python3 "$runtime/python/reference_sidecar.py" --schema-dir "$runtime/schemas" "$@"
+            '';
+          };
         in
         {
-          inherit beads bridgeSkill bridgeConformanceCheck bridgePropertyCheck referencePlanner bridgeSidecar;
+          inherit beads bridgeSkill bridgeConformanceCheck bridgePropertyCheck referencePlanner bridgeSidecar referenceSidecar;
           codex = repoCodex;
           default = bridgeConformanceCheck;
         });
@@ -171,6 +181,10 @@
           type = "app";
           program = "${self.packages.${system}.bridgeSidecar}/bin/bridge-sidecar";
         };
+        reference-sidecar = {
+          type = "app";
+          program = "${self.packages.${system}.referenceSidecar}/bin/reference-sidecar";
+        };
         default = self.apps.${system}.bridge-conformance-check;
       });
 
@@ -188,11 +202,11 @@
                   enable = true;
                   listenAddress = "127.0.0.1";
                   listenPort = 8181;
-                  providerCatalog = ./specs/secrets/secret-0003/examples/example.provider-catalog.json;
-                  deploymentProfile = ./specs/secrets/secret-0003/examples/example.deployment-profile.json;
-                  attestationResult = ./specs/secrets/secret-0003/examples/example.attestation-result.ok.json;
-                  revocationSnapshot = ./specs/secrets/secret-0003/examples/example.revocation-snapshot.clear.json;
-                  modeState = ./specs/secrets/secret-0003/examples/example.mode-state.normal.json;
+                  providerCatalog = ./specs/secrets/secret-0003/examples/provider-catalog.example.json;
+                  deploymentProfile = ./specs/secrets/secret-0003/examples/deployment-profile.nixos-host.json;
+                  attestationResult = ./specs/secrets/secret-0003/examples/attestation-result.good.json;
+                  revocationSnapshot = ./specs/secrets/secret-0003/examples/revocation-snapshot.clean.json;
+                  modeState = ./specs/secrets/secret-0003/examples/mode-state.normal.json;
                 };
                 services.bridgeAgentService = {
                   enable = true;
@@ -258,6 +272,49 @@
             touch "$out"
           '';
 
+          reference-sidecar-help = pkgs.runCommand "reference-sidecar-help" {
+            nativeBuildInputs = [ self.packages.${system}.referenceSidecar ];
+          } ''
+            reference-sidecar --help >/dev/null
+            touch "$out"
+          '';
+
+          reference-sidecar-fixtures = pkgs.runCommand "reference-sidecar-fixtures" {
+            nativeBuildInputs = [
+              self.packages.${system}.referenceSidecar
+              pkgs.diffutils
+            ];
+          } ''
+            examples=${./specs/secrets/secret-0003/examples}
+
+            check_case() {
+              name="$1"
+              request="$2"
+              attestation="$3"
+              mode="$4"
+
+              reference-sidecar \
+                --catalog "$examples/provider-catalog.example.json" \
+                --deployment "$examples/deployment-profile.nixos-host.json" \
+                --request "$examples/$request" \
+                --attestation "$examples/$attestation" \
+                --revocation "$examples/revocation-snapshot.clean.json" \
+                --mode "$examples/$mode" \
+                --decision-out "decision.$name.json" \
+                --audit-out "audit.$name.json" \
+                --now 2026-04-13T14:30:30Z
+
+              diff -u "$examples/generated.provider-decision.$name.json" "decision.$name.json"
+              diff -u "$examples/generated.audit-envelope.$name.json" "audit.$name.json"
+            }
+
+            check_case accept provider-request.allow.json attestation-result.good.json mode-state.normal.json
+            check_case burn provider-request.burn.json attestation-result.good.json mode-state.burn.json
+            check_case deny provider-request.allow.json attestation-result.failed.json mode-state.normal.json
+
+            touch "$out"
+          '';
+
           bridge-agent-service-eval = pkgs.writeText "bridge-agent-service-execstart" (
             bridgeAgentEval.config.systemd.services.bridge-agent.serviceConfig.ExecStart + "\n"
           );
@@ -296,6 +353,7 @@
                 echo "  nix run .#bridge-conformance-check"
                 echo "  nix run .#bridge-property-check"
                 echo "  nix run .#reference-planner -- --help"
+                echo "  nix run .#reference-sidecar -- --help"
               '';
             };
           };

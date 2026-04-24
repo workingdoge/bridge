@@ -54,6 +54,7 @@ nix build .#bridgeSkill              # build the portable bridge skill bundle
 nix run .#bridge-conformance-check    # validate the spec surface
 nix run .#bridge-property-check       # planner-law property checks
 nix run .#reference-planner -- --help # SECRET-0002 reference planner
+nix run .#reference-sidecar -- --help # SECRET-0003 fixture sidecar
 nix run .#bridge-sidecar -- --help    # reference sidecar binary
 nix flake check                       # full check suite
 ```

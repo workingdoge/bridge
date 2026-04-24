@@ -348,3 +348,126 @@ print(json.dumps({
     "secret_0002_signer_lineage_checked": True,
 }, indent=2))
 PY
+
+run_python "$repo_root" <<'PY'
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+secret = root / "specs" / "secrets" / "secret-0003"
+examples = secret / "examples"
+schema_dir = secret / "schemas"
+sys.path.insert(0, str(secret / "python"))
+
+import reference_sidecar
+
+
+def fail(message: str) -> None:
+    print(message, file=sys.stderr)
+    raise SystemExit(1)
+
+
+def load(name: str) -> dict:
+    return json.loads((examples / name).read_text())
+
+
+def schema(name: str) -> dict:
+    return json.loads((schema_dir / name).read_text())
+
+
+SCHEMAS = {
+    "catalog": schema("provider-catalog.schema.json"),
+    "deployment": schema("deployment-profile.schema.json"),
+    "request": schema("provider-request.schema.json"),
+    "attestation": schema("attestation-result.schema.json"),
+    "revocation": schema("revocation-snapshot.schema.json"),
+    "mode": schema("mode-state.schema.json"),
+    "decision": schema("provider-decision.schema.json"),
+    "audit": schema("audit-envelope.schema.json"),
+}
+
+CASES = [
+    (
+        "accept",
+        "provider-request.allow.json",
+        "attestation-result.good.json",
+        "revocation-snapshot.clean.json",
+        "mode-state.normal.json",
+        "generated.provider-decision.accept.json",
+        "generated.audit-envelope.accept.json",
+    ),
+    (
+        "burn",
+        "provider-request.burn.json",
+        "attestation-result.good.json",
+        "revocation-snapshot.clean.json",
+        "mode-state.burn.json",
+        "generated.provider-decision.burn.json",
+        "generated.audit-envelope.burn.json",
+    ),
+    (
+        "deny",
+        "provider-request.allow.json",
+        "attestation-result.failed.json",
+        "revocation-snapshot.clean.json",
+        "mode-state.normal.json",
+        "generated.provider-decision.deny.json",
+        "generated.audit-envelope.deny.json",
+    ),
+]
+
+catalog = load("provider-catalog.example.json")
+deployment = load("deployment-profile.nixos-host.json")
+reference_sidecar.validate(catalog, SCHEMAS["catalog"])
+reference_sidecar.validate(deployment, SCHEMAS["deployment"])
+
+now = reference_sidecar.parse_ts("2026-04-13T14:30:30Z")
+prev_hash = "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+
+for label, request_name, attestation_name, revocation_name, mode_name, expected_decision_name, expected_audit_name in CASES:
+    request = load(request_name)
+    attestation = load(attestation_name)
+    revocation = load(revocation_name)
+    mode = load(mode_name)
+
+    reference_sidecar.validate(request, SCHEMAS["request"])
+    reference_sidecar.validate(attestation, SCHEMAS["attestation"])
+    reference_sidecar.validate(revocation, SCHEMAS["revocation"])
+    reference_sidecar.validate(mode, SCHEMAS["mode"])
+
+    decision = reference_sidecar.make_decision(
+        catalog,
+        deployment,
+        request,
+        attestation,
+        revocation,
+        mode,
+        now=now,
+    )
+    reference_sidecar.validate(decision, SCHEMAS["decision"])
+    expected_decision = load(expected_decision_name)
+    if decision != expected_decision:
+        fail(f"SECRET-0003 generated decision fixture drift: {label} does not match {expected_decision_name}")
+
+    audit = reference_sidecar.build_audit_envelope(
+        decision=decision,
+        source_id=deployment["providers"]["audit_sink"],
+        stream_id="audit-stream-main",
+        sequence=1,
+        prev_event_hash=prev_hash,
+        now=now,
+    )
+    reference_sidecar.validate(audit, SCHEMAS["audit"])
+    expected_audit = load(expected_audit_name)
+    if audit != expected_audit:
+        fail(f"SECRET-0003 generated audit fixture drift: {label} does not match {expected_audit_name}")
+
+print(json.dumps({
+    "ok": True,
+    "secret_0003_provider_decisions_checked": len(CASES),
+    "secret_0003_audit_envelopes_checked": len(CASES),
+}, indent=2))
+PY
