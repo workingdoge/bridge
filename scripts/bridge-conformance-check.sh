@@ -55,10 +55,12 @@ require_text() {
 }
 
 run_python() {
-  if python3 --version >/dev/null 2>&1; then
+  if python3 --version >/dev/null 2>&1 && python3 -c 'import jsonschema' >/dev/null 2>&1; then
     python3 - "$@"
   else
-    nix shell nixpkgs#python3Minimal --command python3 - "$@"
+    nix shell --impure \
+      --expr '(let pkgs = import <nixpkgs> {}; in pkgs.python3.withPackages (ps: with ps; [ jsonschema ]))' \
+      --command python3 - "$@"
   fi
 }
 
@@ -250,4 +252,99 @@ print(
         indent=2,
     )
 )
+PY
+
+run_python "$repo_root" <<'PY'
+from __future__ import annotations
+
+import json
+import hashlib
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+secret = root / "specs" / "secrets" / "secret-0002"
+sys.path.insert(0, str(secret / "python"))
+
+import reference_planner
+
+
+def fail(message: str) -> None:
+    print(message, file=sys.stderr)
+    raise SystemExit(1)
+
+
+def load(name: str) -> dict:
+    return json.loads((secret / "examples" / name).read_text())
+
+
+CASES = [
+    (
+        "analytics allow",
+        "example.backend-profile.vault-dynamic.json",
+        "example.materializer-profile.systemd-credential.json",
+        "example.backend-binding.analytics-db.json",
+        "example.plan-request.analytics-db.json",
+        "generated.materialization-session.allow.json",
+    ),
+    (
+        "analytics burn",
+        "example.backend-profile.vault-dynamic.json",
+        "example.materializer-profile.systemd-credential.json",
+        "example.backend-binding.analytics-db.json",
+        "example.plan-request.burn.json",
+        "generated.materialization-session.deny.json",
+    ),
+    (
+        "signing allow",
+        "example.backend-profile.hsm-rooted-signing.json",
+        "example.materializer-profile.unix-socket-proxy.json",
+        "example.backend-binding.signing-key.json",
+        "example.plan-request.signing-key.json",
+        "generated.materialization-session.signing-key.allow.json",
+    ),
+]
+
+now = reference_planner.parse_utc("2026-04-13T14:30:00Z")
+
+for label, backend_name, materializer_name, binding_name, request_name, expected_name in CASES:
+    actual = reference_planner.plan_session(
+        load(backend_name),
+        load(materializer_name),
+        load(binding_name),
+        load(request_name),
+        now=now,
+    )
+    expected = load(expected_name)
+    if actual != expected:
+        fail(f"SECRET-0002 generated fixture drift: {label} does not match {expected_name}")
+
+signing_session = load("generated.materialization-session.signing-key.allow.json")
+signature_request = load("example.signature-request.signing-key.json")
+signature_response = load("generated.signature-response.signing-key.allow.json")
+witness = load("example.witness-realization.signing-key.json")
+
+if signature_request["session_id"] != signing_session["session_id"]:
+    fail("SECRET-0002 signer request session_id does not match generated signing session")
+if signature_request["bridge_trace"] != signing_session["bridge_trace"]:
+    fail("SECRET-0002 signer request bridge_trace does not match generated signing session")
+if signature_response["session_id"] != signing_session["session_id"]:
+    fail("SECRET-0002 signature response session_id does not match generated signing session")
+if signature_response["bridge_trace"] != signing_session["bridge_trace"]:
+    fail("SECRET-0002 signature response bridge_trace does not match generated signing session")
+if signature_response["signer_identity"]["key_ref"] != signing_session["backend_operation"]["ref"]:
+    fail("SECRET-0002 signature response key_ref does not match generated signing backend operation")
+if witness["bridge_trace"] != signing_session["bridge_trace"]:
+    fail("SECRET-0002 witness bridge_trace does not match generated signing session")
+if witness["state_read"]["materialization_session_ref"] != signing_session["session_id"]:
+    fail("SECRET-0002 witness session ref does not match generated signing session")
+signature_response_digest = hashlib.sha256((secret / "examples" / "generated.signature-response.signing-key.allow.json").read_bytes()).hexdigest()
+if witness["witness_artifact"]["artifact_digest"]["value"] != signature_response_digest:
+    fail("SECRET-0002 witness artifact digest does not match generated signature response")
+
+print(json.dumps({
+    "ok": True,
+    "secret_0002_generated_sessions_checked": len(CASES),
+    "secret_0002_signer_lineage_checked": True,
+}, indent=2))
 PY

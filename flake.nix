@@ -68,6 +68,11 @@
             '';
           };
           pythonEnv = pkgs.python3.withPackages (ps: with ps; [ jsonschema hypothesis ]);
+          secret0002Runtime = pkgs.runCommand "secret-0002-runtime" {} ''
+            mkdir -p "$out/share/secret-0002"
+            cp -R ${./specs/secrets/secret-0002/python} "$out/share/secret-0002/python"
+            cp -R ${./specs/secrets/secret-0002/schemas} "$out/share/secret-0002/schemas"
+          '';
           bridgeSidecarRuntime = pkgs.runCommand "bridge-sidecar-runtime" {} ''
             mkdir -p "$out/share/bridge-sidecar"
             cp -R ${./specs/secrets/secret-0003/python} "$out/share/bridge-sidecar/python"
@@ -93,7 +98,7 @@
             name = "bridge-conformance-check";
             runtimeInputs = [
               pkgs.jq
-              pkgs.python3Minimal
+              pythonEnv
               pkgs.ripgrep
             ];
             text = ''
@@ -113,7 +118,9 @@
             name = "reference-planner";
             runtimeInputs = [ pythonEnv ];
             text = ''
-              exec python3 ${./specs/secrets/secret-0002/python/reference_planner.py} "$@"
+              runtime=${secret0002Runtime}/share/secret-0002
+              export PYTHONPATH="$runtime/python''${PYTHONPATH:+:$PYTHONPATH}"
+              exec python3 "$runtime/python/reference_planner.py" "$@"
             '';
           };
 
@@ -220,6 +227,27 @@
             nativeBuildInputs = [ self.packages.${system}.referencePlanner ];
           } ''
             reference-planner --help >/dev/null
+            touch "$out"
+          '';
+
+          reference-planner-plan = pkgs.runCommand "reference-planner-plan" {
+            nativeBuildInputs = [
+              self.packages.${system}.referencePlanner
+              pkgs.jq
+            ];
+          } ''
+            reference-planner plan --now 2026-04-13T14:30:00Z \
+              ${./specs/secrets/secret-0002/examples/example.backend-profile.vault-dynamic.json} \
+              ${./specs/secrets/secret-0002/examples/example.materializer-profile.systemd-credential.json} \
+              ${./specs/secrets/secret-0002/examples/example.backend-binding.analytics-db.json} \
+              ${./specs/secrets/secret-0002/examples/example.plan-request.analytics-db.json} \
+              > session.json
+            jq -e '
+              .decision == "allow" and
+              .request_id == "req.analytics.20260413.001" and
+              .issued_at == "2026-04-13T14:30:00Z" and
+              .expires_at == "2026-04-13T14:32:00Z"
+            ' session.json >/dev/null
             touch "$out"
           '';
 

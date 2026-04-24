@@ -39,7 +39,7 @@ def validate_schema(name: str, payload: Dict[str, Any]) -> None:
 USAGE = (
     "usage:\n"
     "  reference_planner.py validate <backend.json> <materializer.json> <binding.json>\n"
-    "  reference_planner.py plan <backend.json> <materializer.json> <binding.json> <request.json>\n"
+    "  reference_planner.py plan [--now <iso-utc>] <backend.json> <materializer.json> <binding.json> <request.json>\n"
 )
 
 
@@ -133,6 +133,10 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def parse_utc(value: str) -> datetime:
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+
+
 def _iso(dt: datetime) -> str:
     return dt.isoformat().replace("+00:00", "Z")
 
@@ -203,7 +207,13 @@ def _backend_operation_for(backend: Dict[str, Any], binding: Dict[str, Any], req
     return {"kind": "lookup-reference", "ref": f"ref://{secret}/{rid}"}
 
 
-def plan_session(backend: Dict[str, Any], materializer: Dict[str, Any], binding: Dict[str, Any], request: Dict[str, Any]) -> Dict[str, Any]:
+def plan_session(
+    backend: Dict[str, Any],
+    materializer: Dict[str, Any],
+    binding: Dict[str, Any],
+    request: Dict[str, Any],
+    now: datetime | None = None,
+) -> Dict[str, Any]:
     validate_schema("request", request)
     errors = validate_profiles(backend, materializer, binding)
 
@@ -267,7 +277,7 @@ def plan_session(backend: Dict[str, Any], materializer: Dict[str, Any], binding:
     if binding["non_exportable"] and materializer["plaintext_surface"] in {"tmpfs-bounded", "credential-dir-bounded"} and backend["backend_type"] in {"hsm-rooted", "external-reference"}:
         deny.append("non-exportable rooted/reference secret cannot widen to file/path surface")
 
-    issued_at = _now()
+    issued_at = now or _now()
     expires_at = issued_at if deny else issued_at + timedelta(seconds=request["requested_ttl_s"])
     session = {
         "schema_version": "secret-0002-0.1",
@@ -322,14 +332,25 @@ def main(argv: List[str]) -> int:
         print(USAGE, file=sys.stderr)
         return 0
 
-    if len(argv) < 5:
+    cmd = argv[1]
+    args = argv[2:]
+    now = None
+
+    if "--now" in args:
+        idx = args.index("--now")
+        if idx + 1 >= len(args):
+            print("--now requires <iso-utc>", file=sys.stderr)
+            return 2
+        now = parse_utc(args[idx + 1])
+        del args[idx:idx + 2]
+
+    if len(args) < 3:
         print(USAGE, file=sys.stderr)
         return 2
 
-    cmd = argv[1]
-    backend = load_json(Path(argv[2]))
-    materializer = load_json(Path(argv[3]))
-    binding = load_json(Path(argv[4]))
+    backend = load_json(Path(args[0]))
+    materializer = load_json(Path(args[1]))
+    binding = load_json(Path(args[2]))
 
     if cmd == "validate":
         errs = validate_profiles(backend, materializer, binding)
@@ -340,15 +361,15 @@ def main(argv: List[str]) -> int:
         return 0
 
     if cmd == "plan":
-        if len(argv) < 6:
+        if len(args) < 4:
             print("plan requires <backend.json> <materializer.json> <binding.json> <request.json>", file=sys.stderr)
             return 2
-        request = load_json(Path(argv[5]))
+        request = load_json(Path(args[3]))
         errs = validate_profiles(backend, materializer, binding)
         if errs:
             print(json.dumps({"ok": False, "errors": errs}, indent=2))
             return 1
-        session = plan_session(backend, materializer, binding, request)
+        session = plan_session(backend, materializer, binding, request, now=now)
         print(json.dumps(session, indent=2))
         return 0
 
