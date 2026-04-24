@@ -1,7 +1,1 @@
-{
-  "database": "dolt",
-  "backend": "dolt",
-  "dolt_mode": "embedded",
-  "dolt_database": "bridge",
-  "project_id": "3117606d-2592-4f0c-9c7c-5cc8cd1effdd"
-}
+{"backend":"dolt","database":"dolt","dolt_database":"bridge","dolt_mode":"server","dolt_server_host":"127.0.0.1","project_id":"3117606d-2592-4f0c-9c7c-5cc8cd1effdd"}
