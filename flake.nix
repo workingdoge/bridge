@@ -54,6 +54,13 @@
           pkgs = nixpkgs.legacyPackages.${system};
           tuskBeads = tusk.apps.${system}.beads.program;
           tuskCodex = tusk.apps.${system}.codex.program;
+          bridgeSkillSource = ./.agents/skills/bridge;
+          bridgeSkill = pkgs.runCommand "bridge-skill" {} ''
+            mkdir -p "$out"
+            cp -R ${bridgeSkillSource}/. "$out/"
+            chmod -R u+w "$out"
+            test -f "$out/SKILL.md"
+          '';
           beads = pkgs.writeShellApplication {
             name = "bd";
             text = ''
@@ -121,7 +128,7 @@
           };
         in
         {
-          inherit beads bridgeConformanceCheck bridgePropertyCheck referencePlanner bridgeSidecar;
+          inherit beads bridgeSkill bridgeConformanceCheck bridgePropertyCheck referencePlanner bridgeSidecar;
           codex = repoCodex;
           default = bridgeConformanceCheck;
         });
@@ -194,6 +201,11 @@
             nativeBuildInputs = [ self.packages.${system}.bridgeConformanceCheck ];
           } ''
             bridge-conformance-check >/dev/null
+            touch "$out"
+          '';
+
+          bridge-skill-export = pkgs.runCommand "bridge-skill-export" {} ''
+            test -f ${self.packages.${system}.bridgeSkill}/SKILL.md
             touch "$out"
           '';
 

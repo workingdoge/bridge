@@ -11,6 +11,7 @@ bd update <id> --claim  # Claim work atomically
 bd close <id>         # Complete work
 bd dolt push          # Push beads data to remote
 scripts/bridge-conformance-check.sh  # Verify normalized bridge surface
+nix build .#bridgeSkill  # Build the portable bridge skill bundle
 nix run .#bridge-conformance-check   # Run the exported conformance app
 nix run .#bridge-property-check      # Run the exported planner-law app
 nix run .#reference-planner -- --help  # Show the planner entrypoint
@@ -29,6 +30,9 @@ nix flake check
   bridge skill.
 - `specs/` is the normalized active surface for bridge-owned specs.
 - `modules/` is the repo-owned exported Nix module surface.
+- `flake.nix` exports `packages.<system>.bridgeSkill` as the portable bridge
+  skill bundle for downstream `codex.skills.bridge.source` and
+  `claude.skills.bridge.source` consumers.
 - `modules/nixos/bridge-agent-service.nix` is the repo-owned reference
   workload attachment surface for the sidecar.
 - `references/source-bundles/` holds imported source bundles for provenance only.

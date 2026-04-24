@@ -49,11 +49,39 @@ implementation.
 ### Apps and checks
 
 ```bash
+nix build .#bridgeSkill              # build the portable bridge skill bundle
 nix run .#bridge-conformance-check    # validate the spec surface
 nix run .#bridge-property-check       # planner-law property checks
 nix run .#reference-planner -- --help # SECRET-0002 reference planner
 nix run .#bridge-sidecar -- --help    # reference sidecar binary
 nix flake check                       # full check suite
+```
+
+### Portable Skill
+
+`packages.<system>.bridgeSkill` is the canonical flake export for the shared
+bridge skill bundle. Downstream consumers should lock this repo as a flake
+input and point `codex.skills.bridge.source` and `claude.skills.bridge.source`
+at that package instead of reaching into a sibling checkout's
+`.agents/skills/bridge` directory.
+
+Example:
+
+```nix
+{
+  inputs.bridge.url = "git+https://github.com/workingdoge/bridge.git?ref=main";
+
+  outputs = { nixpkgs, bridge, ... }:
+    let
+      system = "x86_64-linux";
+    in
+    {
+      devenv.shells.default = {
+        codex.skills.bridge.source = bridge.packages.${system}.bridgeSkill;
+        claude.skills.bridge.source = bridge.packages.${system}.bridgeSkill;
+      };
+    };
+}
 ```
 
 ## Quick start
