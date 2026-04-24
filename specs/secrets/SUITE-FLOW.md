@@ -7,6 +7,30 @@ Read it before treating any one bundle as the whole secret-management contract.
 The bundle IDs are stable import identities; the operational shape is a single
 flow across them.
 
+## Documentation Shape
+
+The reader-facing documentation view is:
+
+```text
+specs/secrets/
+  core/
+  materialization/
+  provider-plane/
+```
+
+The compatibility bundle paths remain:
+
+```text
+specs/secrets/
+  secret-0001/
+  secret-0002/
+  secret-0003/
+```
+
+Do not move canonical schemas, examples, reference harnesses, or checksum
+manifests out of the `secret-000*` directories without a separate migration
+that updates downstream paths and conformance coverage.
+
 ## Read Order
 
 1. `SECRET-0001` names the secret and its lifecycle.

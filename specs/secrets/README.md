@@ -11,9 +11,17 @@ the three bundles.
 
 | Family | Role | Entry point |
 | --- | --- | --- |
+| `core/` | Clean view over secret identity, version lifecycle, and class policy | [`core/README.md`](core/README.md) |
+| `materialization/` | Clean view over backend/materializer selection and session realization | [`materialization/README.md`](materialization/README.md) |
+| `provider-plane/` | Clean view over provider facts, deployment binding, sidecar API, and audit | [`provider-plane/README.md`](provider-plane/README.md) |
 | `secret-0001/` | Secret object, version lifecycle, class policy, and lifecycle-core grant vocabulary | [`secret-0001/README.md`](secret-0001/README.md) |
 | `secret-0002/` | Backend/materializer selection, plan requests, materialization sessions, signer-session edge, and witness realization | [`secret-0002/README.md`](secret-0002/README.md) |
 | `secret-0003/` | Provider catalog, deployment profile, attestation, revocation, mode, audit, and sidecar reference | [`secret-0003/README.md`](secret-0003/README.md) |
+
+The `core/`, `materialization/`, and `provider-plane/` directories are the
+reader-facing documentation view. The `secret-0001/`, `secret-0002/`, and
+`secret-0003/` directories remain the canonical compatibility paths for the
+imported bundle files, schemas, examples, harnesses, and checksum manifests.
 
 ## Runtime Shape
 
