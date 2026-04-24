@@ -1,6 +1,11 @@
-# SECRET-0001 bundle
+# SECRET-0001 Bundle
 
-This bundle adds the missing **secret object and lifecycle core** behind the bridge.
+`SECRET-0001` is the **Secret Core** bundle. It defines what a secret is, how
+versions move through lifecycle state, and which policy fields constrain later
+materialization.
+
+It is not the backend-selection layer and it is not the provider-deployment
+layer. Read it with [`../SUITE-FLOW.md`](../SUITE-FLOW.md).
 
 ## Contents
 
@@ -20,15 +25,34 @@ This bundle adds the missing **secret object and lifecycle core** behind the bri
   - starter class defaults
 - `python/reference_validator.py`
   - reference validator / decision harness
-- `examples/*`
-  - sample objects and materialization flow
 
 ## Intended use
 
 Use this bundle with the bridge artifacts:
 
 1. the bridge determines whether a caller is allowed to attempt a bounded secret use;
-2. SECRET-0001 defines how the secret itself is represented, activated, materialized, rotated, revoked, recovered, and destroyed.
+2. `SECRET-0001` defines how the secret itself is represented, activated,
+   rotated, revoked, recovered, and destroyed;
+3. `SECRET-0003` supplies provider facts for attestation, revocation, mode, and
+   audit readiness;
+4. `SECRET-0002` turns the admitted request plus lifecycle and provider facts
+   into a concrete `MaterializationSession`.
+
+## Materialization vocabulary
+
+This bundle includes `MaterializationRequest` and `MaterializationGrant` as the
+generic lifecycle-core lease vocabulary. Runtime bridge-to-secret session
+issuance should use `SECRET-0002` `MaterializationPlanRequest` and
+`MaterializationSession`.
+
+The split is:
+
+- `SECRET-0001` decides whether a secret version and class policy are eligible
+  for bounded use.
+- `SECRET-0002` decides the selected backend, selected materializer, local
+  handle shape, TTL, teardown, and denial record.
+- `SECRET-0003` decides whether provider facts and deployment state are fresh
+  enough to trust the runtime path.
 
 ## Important design rule
 
@@ -36,18 +60,21 @@ These records are **metadata and control objects**. They intentionally exclude r
 
 ## Quickstart
 
-Validate an example secret object:
+The normalized bridge tree currently stages the schemas and reference validator
+for `SECRET-0001`; it does not stage the original example objects.
+
+Validate a downstream or local example secret object:
 
 ```bash
-python3 python/reference_validator.py validate-secret examples/example.secret-object.dynamic-db-template.json
+python3 python/reference_validator.py validate-secret <secret-object.json>
 ```
 
 Generate an allow/deny materialization decision:
 
 ```bash
 python3 python/reference_validator.py authorize \
-  examples/example.secret-object.dynamic-db-template.json \
-  examples/example.materialization-request.json
+  <secret-object.json> \
+  <materialization-request.json>
 ```
 
 ## Caveats

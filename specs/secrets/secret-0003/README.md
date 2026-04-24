@@ -1,6 +1,11 @@
 # SECRET-0003 Bundle
 
-This bundle completes the provider-side portion of the secret-management suite.
+`SECRET-0003` is the **Provider Authority and Audit** bundle. It defines who
+supplies authoritative runtime facts, how a deployment binds those providers,
+and how durable evidence is emitted.
+
+It does not define logical secret lifecycle and it does not issue local secret
+sessions. Read it with [`../SUITE-FLOW.md`](../SUITE-FLOW.md).
 
 ## Contents
 
@@ -28,6 +33,18 @@ This bundle completes the provider-side portion of the secret-management suite.
 - validated example JSON files against the included schemas
 - ran the reference sidecar to generate accept, deny, and burn decisions
 - ran the included Python tests
+
+## Flow position
+
+`SECRET-0003` sits on both sides of `SECRET-0002`:
+
+1. Before materialization, it supplies provider facts: attestation, revocation,
+   mode, time, deployment profile, and audit readiness.
+2. After decision or session activity, it supplies durable evidence:
+   `AuditEnvelope` and `AuditCheckpoint`.
+
+`ProviderDecision` is provider-readiness evidence. It is not the bridge
+admission decision and it is not a `SECRET-0002` materialization session.
 
 ## Important caveat
 

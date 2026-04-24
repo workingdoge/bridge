@@ -28,9 +28,10 @@ Admission, Secret Core, Realization, Audit). See
 | Spec area | Covers | Entry point |
 |-----------|--------|-------------|
 | `bridge-adapter/` | Adapter contract: ingress, authority, interpretation, admission | [`specs/bridge-adapter/README.md`](specs/bridge-adapter/README.md) |
-| `secrets/secret-0001/` | Secret object and lifecycle core | [`specs/secrets/secret-0001/`](specs/secrets/secret-0001/) |
-| `secrets/secret-0002/` | Backend and materialization profile, signer-session and witness-realization edge | [`specs/secrets/secret-0002/`](specs/secrets/secret-0002/) |
-| `secrets/secret-0003/` | Provider integration, attestation, audit, deployment | [`specs/secrets/secret-0003/`](specs/secrets/secret-0003/) |
+| `secrets/` | Secret-suite flow across lifecycle, provider facts, materialization, and audit | [`specs/secrets/SUITE-FLOW.md`](specs/secrets/SUITE-FLOW.md) |
+| `secrets/secret-0001/` | Secret object, version lifecycle, and class policy | [`specs/secrets/secret-0001/`](specs/secrets/secret-0001/) |
+| `secrets/secret-0002/` | Backend/materializer selection, materialization sessions, signer-session and witness-realization edge | [`specs/secrets/secret-0002/`](specs/secrets/secret-0002/) |
+| `secrets/secret-0003/` | Provider integration, attestation, mode, audit, and deployment | [`specs/secrets/secret-0003/`](specs/secrets/secret-0003/) |
 | `bridge-premath-0001/` | Bridge-specific Premath realization profile | [`specs/bridge-premath-0001/`](specs/bridge-premath-0001/) |
 
 ### Nix modules
@@ -204,6 +205,8 @@ Source: [`modules/nixos/bridge-sidecar.nix`](modules/nixos/bridge-sidecar.nix),
 - [`specs/bridge-adapter/README.md`](specs/bridge-adapter/README.md) — adapter
   contract and assembly rules
 - [`specs/secrets/README.md`](specs/secrets/README.md) — secret suite overview
+- [`specs/secrets/SUITE-FLOW.md`](specs/secrets/SUITE-FLOW.md) — crosswalk for
+  `SECRET-0001`, `SECRET-0002`, and `SECRET-0003`
 - [`specs/bridge-premath-0001/`](specs/bridge-premath-0001/) — Premath
   realization profile
 - [`PROVENANCE.md`](PROVENANCE.md) — import record and authority split
