@@ -1,8 +1,9 @@
-53b901d928ba2be051b6bf3d9a90f56fea61cee4e6e979a14ee1e3b0d3562144  ./BRIDGE-PREMATH-0001.premath-gluing-profile.md
-4b073728df6101aa0d341c15d3c3b8ff7481f8fb570c74e5af4091b0042544d2  ./README.md
+d4c46d8c5f5d92ed452db5a7027303da33e9c76fb0466a79340dc916098083cc  ./BRIDGE-PREMATH-0001.premath-gluing-profile.md
+1e4bc84989631da448e13148ef95b05b34622da70305b1d5c4b4b98663721f58  ./README.md
 597342372ef8e199e6b4e7c881158197b3856ab1869711571be22038259196c4  ./bridge-kb-proof-boundary.md
 b7aa2280ce0859d0788239d261cc591c0664fcc9cced0e54424623ee67e5a833  ./examples/example.context-morphism.reduce-ttl.json
 59c22e7c8df84767a3e4da7565cac0c86e51be31b41d3cc2a641814c94f1bb66  ./examples/example.context.json
+fd758f56cb4a2c819b383166de7fd8aed83de12fabe289929a97faff9fa062a1  ./examples/example.glued-bundle.burn-obstruction.json
 c0e94ddd567dff3f4b311beba4fcbd2385ffb7b11abc897dbcbd99661cc2c9f4  ./examples/example.glued-bundle.json
 fd00bfd8244d3c0ecc19ec72128e09a3a7e95855a738252be773504cb3453b1b  ./schemas/audit-overlap.schema.json
 73c7e5a505eb809dd9b7f9d55c32f3eea32ea8617e6e421301e059c945f559e5  ./schemas/compatibility-witness.schema.json
@@ -13,4 +14,5 @@ f331ef812d10b2a8e420e286fe26dc57d0274285b7e7608d088a6b1108c4d8c5  ./schemas/poli
 c37c684d006f5f20bf8447f1cd62858e1620478e45b0ad8cabff82b03a397783  ./schemas/premath-context.schema.json
 59193542bc519bef9fa5b9fe7e3cfdac87f985716152c869d977e286c36d2297  ./schemas/request-overlap.schema.json
 7e417d20356d2bb772df624b0c6e2febf7c0f806e5d2a9994356ecc1edd897ef  ./schemas/secret-overlap.schema.json
+fe0851a47516568f04566b025f4d5b98da7d8a0b7cf595cabfc3a706f6dc1a03  ./secret-bound-execution-bundle.md
 30e774545d2de4941ee943ab35b900015ef1cd318ec515b8bb1a04565592cc16  ./ts/interfaces.ts

@@ -1,0 +1,114 @@
+{
+  "version": "bridge-premath-0001-0.1",
+  "bundle_id": "glued.analytics.reporting-db.burn.20260413.001",
+  "context_ref": "ctx.analytics.reporting-db.burn.20260413.001",
+  "overlaps": {
+    "request": {
+      "trace": "trace.analytics.burn.20260413.001",
+      "request_id": "req.analytics.burn.20260413.001",
+      "witness_jti": "jti.analytics.burn.20260413.001",
+      "requested_tool": "db.query.readonly",
+      "requested_resource": "postgres://analytics/reporting",
+      "source_domain": "acme.prod.analytics",
+      "destination_domain": "acme.prod.analytics",
+      "subject_id": "spiffe://acme/agents/reporting-worker",
+      "act_for": "user:alice@example.com",
+      "consumer_kind": "systemd-unit",
+      "consumer_id": "analytics-reporter.service"
+    },
+    "secret": {
+      "secret_id": "secret.analytics.reporting-db",
+      "secret_class": "database-credential",
+      "version_selector": "active",
+      "version_id": "v12",
+      "secret_epoch": 12,
+      "binding_id": "binding.reporting-db",
+      "requested_resource": "postgres://analytics/reporting",
+      "backend_profile_id": "backend.vault-dynamic-db",
+      "materializer_profile_id": "materializer.systemd-credential"
+    },
+    "policy": {
+      "requested_method": "systemd-credential",
+      "requested_ttl_s": 300,
+      "mode": "burn",
+      "conf_level": "restricted",
+      "integ_level": "attested",
+      "non_exportable": true,
+      "direct_model_access_prohibited": true
+    },
+    "facts": {
+      "deployment_profile_id": "nixos-host-main",
+      "provider_catalog_id": "catalog.main",
+      "attestation_id": "att-2026-04-13T14:30:00Z-host-1",
+      "posture_digest": "sha256:99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa",
+      "revocation_snapshot_id": "rev-2026-04-13T14:30:00Z",
+      "issuer_epoch": "2026Q2",
+      "mode_epoch": 6,
+      "audit_sink_id": "audit-main"
+    },
+    "audit": {
+      "trace": "trace.analytics.burn.20260413.001",
+      "stream_id": "audit-stream-main",
+      "sequence": 43,
+      "payload_hash": "sha256:9f3a8b8d3c9c421f893b84e3c3e1b752f08e0f582db5b0fda282427d33e6eaa1",
+      "prev_event_hash": "sha256:6842d4619af0f3974fd53de02cd832c6a5cfd833bc13c0f4fc8682bd19f23a66",
+      "event_hash": "sha256:b6ac5f2496b4f0110c55ddbd285c51786c163807ef94f97b1f7095ab1952bd2f"
+    }
+  },
+  "local_sections": {
+    "bridge": {
+      "trace": "trace.analytics.burn.20260413.001",
+      "witness_jti": "jti.analytics.burn.20260413.001",
+      "decision_effect": "burn",
+      "effective_ttl_s": 0,
+      "policy_input_hash": "sha256:3ad46a1f6c7b0c7703a79ccab59326c0ce9d6d5d6a3dcf387fca6ae79e7be6c2"
+    },
+    "secret_core": {
+      "secret_id": "secret.analytics.reporting-db",
+      "secret_class": "database-credential",
+      "version_id": "v12",
+      "lifecycle_state": "active"
+    },
+    "materialization": {
+      "binding_id": "binding.reporting-db",
+      "session_id": "session.req.analytics.burn.20260413.001",
+      "session_state": "denied-burn",
+      "issued_ttl_s": 0
+    },
+    "provider_plane": {
+      "deployment_profile_id": "nixos-host-main",
+      "provider_decision_status": "burn",
+      "attestation_id": "att-2026-04-13T14:30:00Z-host-1",
+      "revocation_snapshot_id": "rev-2026-04-13T14:30:00Z"
+    },
+    "audit": {
+      "stream_id": "audit-stream-main",
+      "sequence": 43,
+      "event_hash": "sha256:b6ac5f2496b4f0110c55ddbd285c51786c163807ef94f97b1f7095ab1952bd2f"
+    }
+  },
+  "compatibility_witness": {
+    "version": "bridge-premath-0001-0.1",
+    "witness_id": "compat.analytics.reporting-db.burn.20260413.001",
+    "request_coherent": true,
+    "secret_seam_coherent": true,
+    "policy_monotone": true,
+    "authority_is_meet": true,
+    "provider_facts_coherent": true,
+    "lifecycle_coherent": true,
+    "burn_dominates": true,
+    "audit_before_allow": true,
+    "no_plaintext_global": true,
+    "notes": [
+      "Burn mode obstructs a usable materialization section.",
+      "The global object remains audit-capable and carries a denied-burn session record.",
+      "No raw plaintext secret values appear in the glued bundle."
+    ]
+  },
+  "laws": {
+    "pullback_stable": true,
+    "descent_claimed": true,
+    "plaintext_global_section_absent": true
+  },
+  "notes": "Starter obstruction example: burn prevents a usable materialization section while preserving audit evidence."
+}

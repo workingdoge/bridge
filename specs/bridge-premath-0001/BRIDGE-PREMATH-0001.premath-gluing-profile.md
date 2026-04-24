@@ -31,6 +31,11 @@ specification are to be interpreted as described in RFC 2119 and RFC 8174.
 This document indexes the current bridge + secret-management suite as one
 Premath-admissible object.
 
+For a reader-facing fibre-bundle view of this profile, see
+`secret-bound-execution-bundle.md`. That note explains the base context, fibre,
+local charts, overlap objects, global sections, and obstruction fixtures without
+replacing the normative profile below.
+
 Its job is not to replace:
 
 - Bridge Spec v0.2,
@@ -732,13 +737,15 @@ A conforming implementation SHOULD run at least the following tests.
 1. Identity pullback on each chart and on `Def`.
 2. Composition of pullback on each chart and on `Def`.
 3. Glue success for a compatible five-chart cover.
-4. Glue failure for mismatched trace or secret seam.
-5. Burn dominance under any chart entering burn.
-6. TTL monotonicity under repeated refinement.
-7. No-plaintext-global-section check.
-8. Audit-before-allow check.
-9. Provider-fact freshness rejection check.
-10. Refinement-closure check on a refined cover.
+4. Obstruction fixture for a denied or burned context that still emits durable
+   evidence.
+5. Glue failure for mismatched trace or secret seam.
+6. Burn dominance under any chart entering burn.
+7. TTL monotonicity under repeated refinement.
+8. No-plaintext-global-section check.
+9. Audit-before-allow check.
+10. Provider-fact freshness rejection check.
+11. Refinement-closure check on a refined cover.
 
 ## 15. Rejection criteria
 

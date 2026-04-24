@@ -7,6 +7,8 @@ secret-management suite.
 
 - `BRIDGE-PREMATH-0001.premath-gluing-profile.md`
   - normative draft profile
+- `secret-bound-execution-bundle.md`
+  - reader-facing fibre-bundle view of the bridge secret execution object
 - `bridge-kb-proof-boundary.md`
   - bridge-owned proof boundary for consuming the carried `NERVE-KB` seam
 - `ts/interfaces.ts`
@@ -25,6 +27,7 @@ secret-management suite.
 - `examples/example.context.json`
 - `examples/example.context-morphism.reduce-ttl.json`
 - `examples/example.glued-bundle.json`
+- `examples/example.glued-bundle.burn-obstruction.json`
 
 ## What this bundle adds
 
@@ -33,6 +36,8 @@ secret-management suite.
 - explicit context morphisms for pullback
 - an explicit bridge-to-secret seam
 - a global glued object with compatibility witnesses
+- a fibre-bundle reading of `SECRET-0001`, `SECRET-0002`, and `SECRET-0003`
+  as charts over one secret-bound execution context
 - one bridge-owned boundary note for the first `NERVE-KB` proof seam
 
 ## What it intentionally does not do
